@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6b2fa0"/>
+      <stop offset="40%" stop-color="#9b4fc7"/>
+      <stop offset="100%" stop-color="#c580e8"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#ffeaa7" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffeaa7" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moon-glow" cx="60%" cy="20%" r="30%">
+      <stop offset="0%" stop-color="#fdcfe8" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#fdcfe8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#sky)"/>
+  <rect width="400" height="300" fill="url(#glow)"/>
+  <rect width="400" height="300" fill="url(#moon-glow)"/>
+  <!-- Луна -->
+  <circle cx="300" cy="70" r="40" fill="#ffeaa7" opacity="0.85"/>
+  <circle cx="312" cy="62" r="35" fill="#9b4fc7" opacity="0.45"/>
+  <!-- Облака -->
+  <ellipse cx="80" cy="80" rx="55" ry="22" fill="#c580e8" opacity="0.3"/>
+  <ellipse cx="110" cy="72" rx="40" ry="18" fill="#d4a0ef" opacity="0.3"/>
+  <ellipse cx="320" cy="140" rx="45" ry="18" fill="#c580e8" opacity="0.25"/>
+  <!-- Холм -->
+  <ellipse cx="200" cy="310" rx="260" ry="100" fill="#4a1a7a" opacity="0.95"/>
+  <!-- Дерево -->
+  <rect x="193" y="170" width="14" height="60" fill="#3d1566" opacity="0.9"/>
+  <!-- Листья-пузыри -->
+  <circle cx="200" cy="160" r="35" fill="#7b2fa8" opacity="0.7"/>
+  <circle cx="175" cy="150" r="22" fill="#9b4fc7" opacity="0.6"/>
+  <circle cx="225" cy="148" r="20" fill="#9b4fc7" opacity="0.6"/>
+  <circle cx="200" cy="138" r="18" fill="#b470e0" opacity="0.65"/>
+  <circle cx="200" cy="126" r="12" fill="#ffeaa7" opacity="0.5"/>
+  <!-- Цветы на холме -->
+  <circle cx="120" cy="238" r="5" fill="#fd79a8" opacity="0.8"/>
+  <circle cx="140" cy="232" r="4" fill="#ffeaa7" opacity="0.7"/>
+  <circle cx="260" cy="235" r="5" fill="#fd79a8" opacity="0.8"/>
+  <circle cx="280" cy="240" r="4" fill="#a29bfe" opacity="0.7"/>
+  <!-- Силуэты взрослого и ребёнка -->
+  <circle cx="183" cy="228" r="8" fill="#3d1566" opacity="0.9"/>
+  <path d="M176,236 Q183,218 183,228" fill="#3d1566" opacity="0.9"/>
+  <circle cx="215" cy="232" r="6" fill="#3d1566" opacity="0.9"/>
+  <path d="M209,238 Q215,224 215,232" fill="#3d1566" opacity="0.9"/>
+  <!-- Звёзды -->
+  <circle cx="50" cy="30" r="1.5" fill="#ffeaa7" opacity="0.9"/>
+  <circle cx="160" cy="20" r="1" fill="#fff" opacity="0.8"/>
+  <circle cx="230" cy="35" r="2" fill="#fdcfe8" opacity="0.8"/>
+  <circle cx="30" cy="110" r="1" fill="#fff" opacity="0.6"/>
+  <circle cx="380" cy="95" r="1.5" fill="#ffeaa7" opacity="0.7"/>
+  <circle cx="350" cy="170" r="1" fill="#fff" opacity="0.5"/>
+  <!-- Полосы сияния -->
+  <line x1="300" y1="70" x2="350" y2="20" stroke="#ffeaa7" stroke-width="1" opacity="0.2"/>
+  <line x1="300" y1="70" x2="360" y2="90" stroke="#ffeaa7" stroke-width="1" opacity="0.15"/>
+  <line x1="300" y1="70" x2="240" y2="30" stroke="#ffeaa7" stroke-width="1" opacity="0.15"/>
+</svg>

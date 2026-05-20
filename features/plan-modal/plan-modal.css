@@ -1,0 +1,220 @@
+/*
+ * plan-modal.css — Стили модального окна выбора тарифа.
+ * Все правила scoped внутри #plan-modal.
+ */
+
+@keyframes plan-modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes plan-modal-backdrop-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+#plan-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+#plan-modal[hidden] {
+    display: none;
+}
+
+#plan-modal.plan-modal--entering .plan-modal__backdrop {
+    animation: plan-modal-backdrop-in .25s ease forwards;
+}
+
+#plan-modal.plan-modal--entering .plan-modal__window {
+    animation: plan-modal-in .35s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.plan-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+}
+
+.plan-modal__window {
+    position: relative;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 1.5rem 1.25rem 2rem;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, .12);
+}
+
+.plan-modal__close {
+    display: block;
+    margin-left: auto;
+    margin-bottom: .75rem;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    color: #aaa;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: background .15s, color .15s;
+}
+
+.plan-modal__close:hover {
+    background: #f0f0f0;
+    color: #555;
+}
+
+.plan-modal__context {
+    background: linear-gradient(135deg, #f0eeff 0%, #e8f4ff 100%);
+    border-left: 3px solid var(--color-primary, #6c5ce7);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-text);
+}
+
+.plan-modal__title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 1.25rem;
+    text-align: center;
+}
+
+/* ── Периоды ─────────────────────────────────────────────────────────────── */
+
+.plan-modal__periods {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: 1.25rem;
+    background: #f4f4f6;
+    border-radius: 10px;
+    padding: 4px;
+}
+
+.plan-modal__period {
+    flex: 1;
+    padding: .5rem .25rem;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: .8rem;
+    cursor: pointer;
+    color: #666;
+    transition: background .15s, color .15s;
+    text-align: center;
+}
+
+.plan-modal__period--active {
+    background: #fff;
+    color: #111;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+
+.plan-modal__discount {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #2e7d32;
+    font-size: .7rem;
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin-left: 2px;
+    vertical-align: middle;
+}
+
+/* ── Карточки тарифов ────────────────────────────────────────────────────── */
+
+.plan-modal__cards {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.plan-modal__card {
+    border: 1.5px solid #eee;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    position: relative;
+}
+
+.plan-modal__card--featured {
+    border-color: var(--color-primary, #6c5ce7);
+}
+
+.plan-modal__card-badge {
+    position: absolute;
+    top: -10px;
+    left: 1rem;
+    background: var(--color-primary, #6c5ce7);
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 2px 8px;
+}
+
+.plan-modal__card-name {
+    font-weight: 700;
+    font-size: 1rem;
+    min-width: 100px;
+}
+
+.plan-modal__card-detail {
+    font-size: .85rem;
+    color: #888;
+    flex: 1;
+}
+
+.plan-modal__price {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #111;
+    white-space: nowrap;
+    margin-right: .5rem;
+}
+
+.plan-modal__btn {
+    padding: .55rem 1.1rem;
+    background: var(--color-primary, #6c5ce7);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s;
+    white-space: nowrap;
+}
+
+.plan-modal__btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+/* ── Ошибка ──────────────────────────────────────────────────────────────── */
+
+.plan-modal__error {
+    margin-top: 1rem;
+    color: #c0392b;
+    font-size: .9rem;
+    text-align: center;
+}

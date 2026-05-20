@@ -1,0 +1,156 @@
+/*
+ * registration-gate.css — Стили состояния "Ворота регистрации".
+ * Mobile-first. Все правила scoped внутри #registration-gate-state.
+ */
+
+#registration-gate-state {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 480px;
+    padding: 0;
+}
+
+/* ── Заголовок с практикой ─────────────────────────────── */
+
+#registration-gate-state .registration-gate__intro {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+#registration-gate-state .registration-gate__practice-title {
+    color: #E8A050;
+}
+
+/* ── Шаги (контейнеры формы) ───────────────────────────── */
+
+#registration-gate-step-email,
+#registration-gate-step-code {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ── Описание ──────────────────────────────────────────── */
+
+#registration-gate-state .registration-gate__task {
+    font-size: 15px;
+    line-height: 1.55;
+    color: #444;
+    margin: 0;
+    padding: 14px 16px;
+    background: #fff8f0;
+    border-left: 3px solid #E8A050;
+    border-radius: 8px;
+}
+
+#registration-gate-state .registration-gate__task-word {
+    font-weight: 700;
+    color: #E8A050;
+}
+
+#registration-gate-state .registration-gate__description {
+    font-size: 15px;
+    line-height: 1.55;
+    color: #555;
+    margin: 0;
+}
+
+/* ── Поля ввода ────────────────────────────────────────── */
+
+#registration-gate-state .registration-gate__input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    box-sizing: border-box;
+    outline: none;
+    background: #fafafa;
+    transition: border-color 0.15s, background 0.15s;
+    -webkit-appearance: none;
+}
+
+#registration-gate-state .registration-gate__input:focus {
+    border-color: #E8A050;
+    background: #fff;
+}
+
+/* ── Чекбоксы ──────────────────────────────────────────── */
+
+#registration-gate-state .registration-gate__checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+    line-height: 1.45;
+}
+
+#registration-gate-state .registration-gate__checkbox-label input[type="checkbox"] {
+    margin-top: 1px;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #E8A050;
+}
+
+/* ── Кнопки ────────────────────────────────────────────── */
+
+#registration-gate-state .registration-gate__btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: #E8A050;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background 0.15s, opacity 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#registration-gate-state .registration-gate__btn:active {
+    background: #c97e30;
+}
+
+#registration-gate-state .registration-gate__btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+#registration-gate-state .registration-gate__btn--secondary {
+    background: transparent;
+    color: #888;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 12px;
+    margin-top: 0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+#registration-gate-state .registration-gate__btn--secondary:active {
+    background: transparent;
+    color: #555;
+}
+
+/* ── Ошибки ────────────────────────────────────────────── */
+
+#registration-gate-state .registration-gate__error {
+    font-size: 13px;
+    color: #c0392b;
+    background: #fdf0ee;
+    border: 1px solid #f5c6c2;
+    border-radius: 10px;
+    padding: 10px 14px;
+    line-height: 1.4;
+}

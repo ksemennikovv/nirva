@@ -1,0 +1,288 @@
+.med-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+.med-modal[hidden] { display: none; }
+
+.med-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(4px);
+}
+
+.med-modal__sheet {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    background: #1a1a2e;
+    border-radius: 24px 24px 0 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 95vh;
+}
+
+/* ── Шапка ─────────────────────────────────────────────────────────────────── */
+
+.med-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1rem .25rem;
+    position: relative;
+}
+.med-modal__counter {
+    font-size: .85rem;
+    color: rgba(255,255,255,.6);
+    letter-spacing: .05em;
+}
+.med-modal__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2.2rem;
+    height: 2.2rem;
+    background: rgba(255,255,255,.12);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+}
+.med-modal__nav:hover { background: rgba(255,255,255,.22); }
+.med-modal__nav--prev { left: 1rem; }
+.med-modal__nav--next { right: 3rem; }
+.med-modal__nav:disabled { opacity: .3; cursor: default; }
+
+.med-modal__close {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255,255,255,.5);
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: .25rem;
+}
+.med-modal__close:hover { color: #fff; }
+
+.med-modal__title {
+    text-align: center;
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    padding: .5rem 3rem .75rem;
+    line-height: 1.3;
+}
+
+/* ── Обложка ────────────────────────────────────────────────────────────────── */
+
+.med-modal__cover {
+    position: relative;
+    height: 240px;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: background .3s;
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+/* Затемняющий градиент: верх светлее, низ темнее для текста */
+.med-modal__cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,.2)  0%,
+        rgba(0,0,0,.05) 30%,
+        rgba(0,0,0,.6)  75%,
+        rgba(0,0,0,.85) 100%
+    );
+    z-index: 0;
+}
+
+.med-modal__cover-desc {
+    position: relative;
+    z-index: 1;
+}
+.med-modal__cover-desc {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem 1.25rem 1rem;
+    background: linear-gradient(to top, rgba(10,10,30,.9) 0%, transparent 100%);
+    color: rgba(255,255,255,.85);
+    font-size: .85rem;
+    line-height: 1.55;
+}
+
+/* ── Плеер ──────────────────────────────────────────────────────────────────── */
+
+.med-modal__player {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .75rem 1.25rem .25rem;
+}
+.med-modal__play {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    background: var(--color-primary, #6c5ce7);
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: opacity .15s;
+}
+.med-modal__play:hover { opacity: .85; }
+.med-modal__play-label {
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.med-modal__waveform {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 36px;
+    overflow: hidden;
+}
+.med-modal__bar {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 3px;
+    border-radius: 2px;
+    background: rgba(108, 92, 231, .45);
+    transition: background .2s;
+    min-height: 3px;
+}
+.med-modal__bar.played {
+    background: var(--color-primary, #6c5ce7);
+}
+
+.med-modal__time {
+    color: rgba(255,255,255,.5);
+    font-size: .78rem;
+    flex-shrink: 0;
+    min-width: 2.5rem;
+    text-align: right;
+}
+
+/* Прогресс-бар */
+.med-modal__progress-wrap {
+    padding: .5rem 1.25rem .75rem;
+}
+.med-modal__progress-track {
+    height: 3px;
+    background: rgba(255,255,255,.12);
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.med-modal__progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--color-primary, #6c5ce7);
+    border-radius: 3px;
+    transition: width .25s linear;
+}
+
+/* ── Покупка ────────────────────────────────────────────────────────────────── */
+
+.med-modal__purchase {
+    background: #fff;
+    border-radius: 16px 16px 0 0;
+    padding: 1rem 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+.med-modal__purchase-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+.med-modal__purchase-icon {
+    font-size: 1.4rem;
+    width: 2.4rem;
+    height: 2.4rem;
+    background: #f0eeff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.med-modal__purchase-info { flex: 1; }
+.med-modal__purchase-price { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; }
+.med-modal__purchase-label { font-size: .78rem; color: #888; }
+.med-modal__purchase-saving { font-size: .78rem; color: #00b894; font-weight: 600; }
+
+.med-modal__btn {
+    padding: .55rem 1.1rem;
+    border-radius: 10px;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid var(--color-primary, #6c5ce7);
+    white-space: nowrap;
+    transition: all .15s;
+    flex-shrink: 0;
+}
+.med-modal__btn--outline {
+    background: transparent;
+    color: var(--color-primary, #6c5ce7);
+}
+.med-modal__btn--outline:hover,
+.med-modal__btn--outline.in-cart {
+    background: var(--color-primary, #6c5ce7);
+    color: #fff;
+}
+.med-modal__btn--outline.in-cart { background: #e17055; border-color: #e17055; }
+
+.med-modal__btn--primary {
+    background: var(--color-primary, #6c5ce7);
+    color: #fff;
+    border-color: var(--color-primary, #6c5ce7);
+}
+.med-modal__btn--primary:hover { opacity: .88; }
+
+/* ── Полная версия (куплено) ────────────────────────────────────────────────── */
+.med-modal__player--full .med-modal__play {
+    background: #00b894;
+}
+.med-modal__play-label--full {
+    color: #55efc4;
+}
+.med-modal__player--full .med-modal__bar {
+    background: rgba(0, 184, 148, .35);
+}
+.med-modal__player--full .med-modal__bar.played {
+    background: #00b894;
+}
+.med-modal__progress-fill--full {
+    background: #00b894;
+}

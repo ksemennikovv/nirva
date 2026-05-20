@@ -1,0 +1,177 @@
+.analysis-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+}
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .75rem 1.5rem;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 100;
+}
+.app-header__back,
+.app-header__logout { color: #888; text-decoration: none; font-size: .9rem; }
+.app-header__logo   { font-weight: 700; color: var(--color-primary, #6c5ce7); }
+
+.analysis-meta {
+    display: flex;
+    align-items: baseline;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+    padding: 0 .25rem;
+}
+.analysis-meta__topic {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    flex: 1;
+}
+.analysis-meta__topic em {
+    font-style: normal;
+    color: #aaa;
+    font-weight: 400;
+}
+.analysis-meta__date {
+    font-size: .82rem;
+    color: #aaa;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.analysis-block {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+    transition: opacity .3s;
+}
+.analysis-block--highlight {
+    background: linear-gradient(135deg, #f0edff, #e8f4fd);
+    border: 1.5px solid var(--color-primary, #6c5ce7);
+    padding: 1.5rem;
+    text-align: center;
+}
+.analysis-block--highlight p {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.analysis-block__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.5rem;
+    cursor: pointer;
+    background: #fafafa;
+}
+.analysis-block__header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+.analysis-block__toggle {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: .85rem;
+    cursor: pointer;
+}
+
+.analysis-block__body {
+    padding: 1.25rem 1.5rem;
+}
+.analysis-block[data-collapsed="true"] .analysis-block__body {
+    display: none;
+}
+.analysis-block[data-collapsed="true"] .analysis-block__toggle::before {
+    content: 'Развернуть';
+}
+.analysis-block[data-collapsed="false"] .analysis-block__toggle::before {
+    content: 'Свернуть';
+}
+/* Скрываем исходный текст кнопки при использовании ::before */
+.analysis-block__toggle { font-size: 0; }
+.analysis-block__toggle::before { font-size: .85rem; }
+
+.analysis-summary__text {
+    line-height: 1.7;
+    color: #444;
+}
+
+.practice-video video {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    background: #000;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: .85rem 2rem;
+    background: var(--color-primary, #6c5ce7);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s;
+    width: 100%;
+    text-align: center;
+}
+.btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+
+.btn-secondary {
+    display: inline-block;
+    padding: .65rem 1.25rem;
+    background: transparent;
+    color: var(--color-primary, #6c5ce7);
+    border: 1.5px solid var(--color-primary, #6c5ce7);
+    border-radius: 8px;
+    font-size: .9rem;
+    cursor: pointer;
+    margin-top: .75rem;
+    transition: background .2s, color .2s;
+}
+.btn-secondary:hover {
+    background: var(--color-primary, #6c5ce7);
+    color: #fff;
+}
+
+.meditations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+.meditation-card {
+    background: #f8f7ff;
+    border-radius: 12px;
+    padding: 1rem;
+}
+.meditation-card__title {
+    font-weight: 600;
+    margin-bottom: .25rem;
+}
+.meditation-card__topic {
+    font-size: .85rem;
+    color: #888;
+    margin-bottom: .75rem;
+}
+.meditation-card audio {
+    width: 100%;
+}
+
+.muted { color: #aaa; font-size: .95rem; }
+
+.analysis-onboarding-video video {
+    width: 100%;
+    border-radius: 12px;
+}

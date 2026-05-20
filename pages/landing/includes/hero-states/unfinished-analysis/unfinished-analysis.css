@@ -1,0 +1,58 @@
+/*
+ * unfinished-analysis.css — Стили состояния "Незавершённый анализ".
+ *
+ * Все правила scoped внутри #unfinished-analysis-state.
+ * Глобальные селекторы запрещены.
+ */
+
+#unfinished-analysis-state {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 480px;
+}
+
+/* Блок с информационным текстом */
+#unfinished-analysis-state .unfinished-analysis__info {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+#unfinished-analysis-state .unfinished-analysis__text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+/* Выделение темы анализа оранжевым */
+#unfinished-analysis-state .unfinished-analysis__highlight {
+    color: #E8A050;
+}
+
+/* Контейнер кнопок */
+#unfinished-analysis-state .unfinished-analysis__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Основная кнопка "Продолжить разбор" */
+#unfinished-analysis-state .unfinished-analysis__btn {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #d0d0d0;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    color: #1a1a1a;
+    text-align: center;
+}
+
+/* Вторичная кнопка "Начать новый" */
+#unfinished-analysis-state .unfinished-analysis__btn--secondary {
+    color: #888;
+}

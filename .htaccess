@@ -1,0 +1,51 @@
+Options -Indexes
+RewriteEngine On
+
+# Статические файлы и существующие пути — не трогаем
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Clean URLs → PHP-страницы
+RewriteRule ^dashboard/?$              /pages/dashboard/index.php      [L]
+RewriteRule ^analysis/([0-9]+)/?$      /pages/analysis/index.php?id=$1 [L,QSA]
+RewriteRule ^diary/?$                  /pages/diary/index.php          [L]
+RewriteRule ^billing/?$                /pages/billing/index.php        [L]
+RewriteRule ^archive/?$                /pages/archive/index.php        [L]
+RewriteRule ^meditations/?$            /pages/meditations/index.php    [L]
+RewriteRule ^login/?$                  /pages/login/index.php          [L]
+RewriteRule ^logout/?$                 /pages/login/api/logout.php     [L]
+
+# Admin panel
+RewriteRule ^admin/?$                              /pages/admin/index.php                        [L]
+RewriteRule ^admin/users/?$                        /pages/admin/users/index.php                  [L]
+RewriteRule ^admin/users/view\.php$                /pages/admin/users/view.php                   [L,QSA]
+RewriteRule ^admin/users/api/update\.php$          /pages/admin/users/api/update.php             [L]
+RewriteRule ^admin/users/api/delete\.php$          /pages/admin/users/api/delete.php             [L]
+RewriteRule ^admin/analyses/?$                     /pages/admin/analyses/index.php               [L,QSA]
+RewriteRule ^admin/analyses/view\.php$             /pages/admin/analyses/view.php                [L,QSA]
+RewriteRule ^admin/analyses/api/delete\.php$           /pages/admin/analyses/api/delete.php              [L]
+RewriteRule ^admin/analyses/api/pending-queue\.php$    /pages/admin/analyses/api/pending-queue.php       [L,QSA]
+RewriteRule ^admin/analyses/supervise\.php$            /pages/admin/analyses/supervise.php               [L]
+RewriteRule ^admin/analyses/api/approve-message\.php$  /pages/admin/analyses/api/approve-message.php     [L]
+RewriteRule ^admin/analyses/api/reject-and-retry\.php$ /pages/admin/analyses/api/reject-and-retry.php    [L]
+RewriteRule ^admin/subscriptions/?$                /pages/admin/subscriptions/index.php          [L,QSA]
+RewriteRule ^admin/subscriptions/api/create\.php$  /pages/admin/subscriptions/api/create.php     [L]
+RewriteRule ^admin/subscriptions/api/update\.php$  /pages/admin/subscriptions/api/update.php     [L]
+RewriteRule ^admin/tariffs/?$                      /pages/admin/tariffs/index.php                [L,QSA]
+RewriteRule ^admin/tariffs/api/save\.php$          /pages/admin/tariffs/api/save.php             [L]
+RewriteRule ^admin/meditations/?$                  /pages/admin/meditations/index.php            [L,QSA]
+RewriteRule ^admin/meditations/api/regenerate\.php$     /pages/admin/meditations/api/regenerate.php      [L]
+RewriteRule ^admin/meditations/categories\.php$         /pages/admin/meditations/categories.php          [L,QSA]
+RewriteRule ^admin/meditations/general\.php$            /pages/admin/meditations/general.php             [L,QSA]
+RewriteRule ^admin/meditations/api/save-category\.php$  /pages/admin/meditations/api/save-category.php   [L]
+RewriteRule ^admin/meditations/api/delete-category\.php$ /pages/admin/meditations/api/delete-category.php [L]
+RewriteRule ^admin/meditations/api/save-general\.php$   /pages/admin/meditations/api/save-general.php    [L]
+RewriteRule ^admin/meditations/api/delete-general\.php$ /pages/admin/meditations/api/delete-general.php  [L]
+RewriteRule ^admin/meditations/edit\.php$               /pages/admin/meditations/edit.php                [L,QSA]
+RewriteRule ^admin/meditations/api/save-edit\.php$      /pages/admin/meditations/api/save-edit.php       [L]
+RewriteRule ^admin/meditations/api/delete-one\.php$     /pages/admin/meditations/api/delete-one.php      [L]
+RewriteRule ^admin/diary/?$                        /pages/admin/diary/index.php                  [L,QSA]
+RewriteRule ^admin/diary/view\.php$                /pages/admin/diary/view.php                   [L,QSA]
+RewriteRule ^admin/portrait/view\.php$             /pages/admin/portrait/view.php                [L,QSA]
+RewriteRule ^admin/api/toggle-supervisor\.php$     /pages/admin/api/toggle-supervisor.php        [L]

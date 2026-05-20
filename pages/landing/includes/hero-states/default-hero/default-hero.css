@@ -1,0 +1,130 @@
+/*
+ * default-hero.css — Стили onboarding-блока "Новый пользователь".
+ *
+ * Mobile-first: базовые правила — для мобильных,
+ * расширения — в @media (min-width: ...).
+ *
+ * Все правила scoped внутри #default-hero-state.
+ * Глобальные селекторы запрещены.
+ */
+
+/* ─── Root container ──────────────────────────────────────────────────────── */
+
+#default-hero-state {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+/* ─── Заголовок ───────────────────────────────────────────────────────────── */
+
+#default-hero-state #hero-title {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--color-text);
+}
+
+/* Выделение акцентной фразы */
+#default-hero-state .hero-title__highlight {
+    color: var(--color-accent);
+}
+
+/* ─── Блок ввода ──────────────────────────────────────────────────────────── */
+
+#default-hero-state .default-hero__input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 12px;
+}
+
+/* Textarea */
+#default-hero-state #hero-text-input {
+    width: 100%;
+    min-height: 100px;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 15px;
+    font-family: inherit;
+    line-height: 1.5;
+    color: var(--color-text);
+    background: transparent;
+    box-sizing: border-box;
+}
+
+/* Состояние ошибки — пустое поле при отправке */
+#default-hero-state #hero-text-input.error {
+    outline: 2px solid #e05050;
+    border-radius: 4px;
+}
+
+/* Строка со вспомогательными кнопками */
+#default-hero-state .default-hero__input-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* ─── Кнопки ──────────────────────────────────────────────────────────────── */
+
+/* Вспомогательные кнопки (диктофон, отправить) */
+#default-hero-state #start-voice-recording,
+#default-hero-state #submit-analysis-input {
+    padding: 6px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    line-height: 1.4;
+}
+
+/* Главная CTA-кнопка */
+#default-hero-state #start-analysis-button {
+    width: 100%;
+    padding: 16px 12px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: #E8C49A;
+    font-size: 15px;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--color-text);
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* ─── Строка доверия ──────────────────────────────────────────────────────── */
+
+#default-hero-state .default-hero__trust {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+/* ─── Tablet (min-width: 480px) ───────────────────────────────────────────── */
+
+@media (min-width: 480px) {
+    #default-hero-state {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 24px 0;
+    }
+
+    #default-hero-state #hero-text-input {
+        min-height: 120px;
+    }
+
+    #default-hero-state #start-analysis-button {
+        font-size: 16px;
+        padding: 18px 12px;
+    }
+}

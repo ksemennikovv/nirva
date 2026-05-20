@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="80%">
+      <stop offset="0%" stop-color="#c0392b"/>
+      <stop offset="50%" stop-color="#922b21"/>
+      <stop offset="100%" stop-color="#2c0b07"/>
+    </radialGradient>
+    <radialGradient id="sunset" cx="50%" cy="55%" r="55%">
+      <stop offset="0%" stop-color="#e67e22" stop-opacity="0.7"/>
+      <stop offset="60%" stop-color="#e67e22" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#e67e22" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <rect width="400" height="300" fill="url(#sunset)"/>
+  <!-- Закатное небо — полосы -->
+  <rect x="0" y="0" width="400" height="60" fill="#e74c3c" opacity="0.25"/>
+  <rect x="0" y="50" width="400" height="40" fill="#e67e22" opacity="0.2"/>
+  <!-- Дерево — ствол -->
+  <rect x="188" y="140" width="24" height="80" fill="#5d2e0c" opacity="0.9"/>
+  <!-- Крона — слои -->
+  <ellipse cx="200" cy="130" rx="70" ry="55" fill="#7b3f00" opacity="0.5"/>
+  <ellipse cx="200" cy="115" rx="60" ry="50" fill="#922b0b" opacity="0.6"/>
+  <ellipse cx="200" cy="100" rx="50" ry="42" fill="#a93226" opacity="0.7"/>
+  <ellipse cx="200" cy="88" rx="38" ry="34" fill="#c0392b" opacity="0.75"/>
+  <ellipse cx="200" cy="78" rx="26" ry="26" fill="#e74c3c" opacity="0.6"/>
+  <!-- Листья — блики -->
+  <ellipse cx="160" cy="105" rx="22" ry="18" fill="#e74c3c" opacity="0.4"/>
+  <ellipse cx="240" cy="100" rx="20" ry="16" fill="#e67e22" opacity="0.35"/>
+  <!-- Солнце садится за горизонт -->
+  <ellipse cx="200" cy="222" rx="55" ry="22" fill="#e67e22" opacity="0.6"/>
+  <ellipse cx="200" cy="222" rx="80" ry="18" fill="#e67e22" opacity="0.25"/>
+  <!-- Горизонт -->
+  <rect x="0" y="218" width="400" height="82" fill="#1a0804"/>
+  <!-- Холмы -->
+  <ellipse cx="80" cy="240" rx="120" ry="40" fill="#2c0b07" opacity="0.9"/>
+  <ellipse cx="330" cy="250" rx="110" ry="35" fill="#2c0b07" opacity="0.9"/>
+  <!-- Силуэты людей -->
+  <circle cx="175" cy="215" r="6" fill="#1a0804"/>
+  <path d="M170,221 Q175,208 175,215" fill="#1a0804"/>
+  <circle cx="200" cy="213" r="7" fill="#1a0804"/>
+  <path d="M193,221 Q200,205 200,213" fill="#1a0804"/>
+  <circle cx="225" cy="216" r="5.5" fill="#1a0804"/>
+  <path d="M220,221 Q225,210 225,216" fill="#1a0804"/>
+  <!-- Звёзды -->
+  <circle cx="50" cy="25" r="1.5" fill="#fff" opacity="0.7"/>
+  <circle cx="350" cy="15" r="1" fill="#fff" opacity="0.6"/>
+  <circle cx="120" cy="10" r="1" fill="#fff" opacity="0.8"/>
+</svg>

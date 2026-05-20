@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#0d5c3a"/>
+      <stop offset="60%" stop-color="#073d27"/>
+      <stop offset="100%" stop-color="#021510"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="35%" r="45%">
+      <stop offset="0%" stop-color="#2ecc71" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#2ecc71" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <rect width="400" height="300" fill="url(#glow)"/>
+  <!-- Вода / поверхность -->
+  <rect x="0" y="200" width="400" height="100" fill="#021510"/>
+  <!-- Волны -->
+  <path d="M0,210 Q50,200 100,210 Q150,220 200,210 Q250,200 300,210 Q350,220 400,210 L400,300 L0,300Z" fill="#052e1c" opacity="0.8"/>
+  <path d="M0,230 Q50,220 100,230 Q150,240 200,230 Q250,220 300,230 Q350,240 400,230 L400,300 L0,300Z" fill="#042518" opacity="0.7"/>
+  <!-- Лотос/цветок -->
+  <ellipse cx="200" cy="200" rx="40" ry="12" fill="#0d5c3a" opacity="0.7"/>
+  <path d="M200,200 Q185,175 200,160 Q215,175 200,200" fill="#27ae60" opacity="0.85"/>
+  <path d="M200,200 Q170,180 165,160 Q185,168 200,200" fill="#2ecc71" opacity="0.7"/>
+  <path d="M200,200 Q230,180 235,160 Q215,168 200,200" fill="#2ecc71" opacity="0.7"/>
+  <path d="M200,200 Q175,195 168,175 Q188,178 200,200" fill="#27ae60" opacity="0.6"/>
+  <path d="M200,200 Q225,195 232,175 Q212,178 200,200" fill="#27ae60" opacity="0.6"/>
+  <circle cx="200" cy="165" r="12" fill="#f9ca24" opacity="0.85"/>
+  <circle cx="200" cy="165" r="7" fill="#f0e68c"/>
+  <!-- Деревья на фоне -->
+  <rect x="50" y="120" width="8" height="80" fill="#052e1c" opacity="0.8"/>
+  <ellipse cx="54" cy="112" rx="22" ry="28" fill="#073d27" opacity="0.8"/>
+  <rect x="340" y="130" width="8" height="70" fill="#052e1c" opacity="0.8"/>
+  <ellipse cx="344" cy="122" rx="20" ry="26" fill="#073d27" opacity="0.8"/>
+  <!-- Звёзды и отражения -->
+  <circle cx="100" cy="50" r="1.5" fill="#2ecc71" opacity="0.6"/>
+  <circle cx="300" cy="30" r="1" fill="#2ecc71" opacity="0.5"/>
+  <circle cx="60" cy="80" r="1" fill="#fff" opacity="0.6"/>
+  <circle cx="350" cy="60" r="1.5" fill="#fff" opacity="0.5"/>
+  <circle cx="200" cy="30" r="2" fill="#f9ca24" opacity="0.7"/>
+  <!-- Туман -->
+  <rect x="0" y="185" width="400" height="30" fill="#0d5c3a" opacity="0.15"/>
+</svg>

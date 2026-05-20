@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a3d6b"/>
+      <stop offset="50%" stop-color="#1a6fa8"/>
+      <stop offset="100%" stop-color="#2196c4"/>
+    </linearGradient>
+    <radialGradient id="moon" cx="30%" cy="25%" r="20%">
+      <stop offset="0%" stop-color="#e8f4f8" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#e8f4f8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="water" cx="50%" cy="100%" r="60%">
+      <stop offset="0%" stop-color="#1565c0"/>
+      <stop offset="100%" stop-color="#0a1a3d"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#sky)"/>
+  <rect width="400" height="300" fill="url(#moon)"/>
+  <!-- Горы снежные -->
+  <polygon points="0,240 70,100 140,240" fill="#0a2a4a" opacity="0.95"/>
+  <polygon points="80,240 180,70 280,240" fill="#0d3461" opacity="0.95"/>
+  <polygon points="260,240 340,110 400,240" fill="#0a2a4a" opacity="0.95"/>
+  <!-- Снеговые шапки -->
+  <polygon points="70,100 90,130 50,130" fill="#dce8f0" opacity="0.8"/>
+  <polygon points="180,70 205,108 155,108" fill="#dce8f0" opacity="0.85"/>
+  <polygon points="340,110 358,138 322,138" fill="#dce8f0" opacity="0.8"/>
+  <!-- Луна -->
+  <circle cx="310" cy="60" r="32" fill="#c8dce8" opacity="0.85"/>
+  <circle cx="320" cy="55" r="28" fill="#1a6fa8" opacity="0.4"/>
+  <!-- Озеро -->
+  <ellipse cx="200" cy="250" rx="200" ry="50" fill="url(#water)"/>
+  <!-- Отражение гор в воде -->
+  <polygon points="80,250 180,290 280,250" fill="#0a2a4a" opacity="0.4"/>
+  <!-- Волны озера -->
+  <path d="M20,248 Q100,242 200,248 Q300,254 380,248" stroke="#74b9ff" stroke-width="1" fill="none" opacity="0.3"/>
+  <path d="M40,258 Q120,252 200,258 Q280,264 360,258" stroke="#74b9ff" stroke-width="1" fill="none" opacity="0.2"/>
+  <!-- Ель слева -->
+  <polygon points="30,240 50,180 70,240" fill="#0a3d2a" opacity="0.9"/>
+  <polygon points="35,200 50,155 65,200" fill="#0d5c3a" opacity="0.9"/>
+  <!-- Ель справа -->
+  <polygon points="330,240 350,185 370,240" fill="#0a3d2a" opacity="0.9"/>
+  <polygon points="335,205 350,160 365,205" fill="#0d5c3a" opacity="0.9"/>
+  <!-- Звёзды -->
+  <circle cx="80" cy="30" r="1.5" fill="#fff" opacity="0.9"/>
+  <circle cx="150" cy="15" r="1" fill="#fff" opacity="0.8"/>
+  <circle cx="250" cy="25" r="1.5" fill="#fff" opacity="0.7"/>
+  <circle cx="40" cy="55" r="1" fill="#fff" opacity="0.6"/>
+  <circle cx="380" cy="40" r="1" fill="#fff" opacity="0.8"/>
+  <circle cx="200" cy="10" r="2" fill="#fff" opacity="0.9"/>
+  <!-- Туман над озером -->
+  <rect x="0" y="232" width="400" height="20" fill="#74b9ff" opacity="0.06"/>
+</svg>

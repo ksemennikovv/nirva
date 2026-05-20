@@ -1,0 +1,25 @@
+/*
+ * landing.css — Базовые стили landing-страницы.
+ *
+ * Содержит только layout .landing-контейнера и глобальный сброс
+ * для атрибута hidden (гарантирует корректную работу HeroStatesManager).
+ *
+ * Стили каждого hero-state — в отдельных scoped CSS-файлах.
+ * Глобальные селекторы (body, *, h1 и т.д.) запрещены.
+ */
+
+/* Гарантирует, что [hidden] всегда скрывает элемент,
+   даже если другие правила задают display: block */
+[hidden] {
+    display: none !important;
+}
+
+/* Корневой контейнер landing-страницы */
+.landing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px 16px;
+    box-sizing: border-box;
+}

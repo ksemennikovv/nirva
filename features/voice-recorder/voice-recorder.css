@@ -1,0 +1,29 @@
+/**
+ * voice-recorder.css — Стили голосовых кнопок.
+ *
+ * Scoped к кнопкам диктофона: #start-voice-recording, #start-chat-roller-voice-recording.
+ * Класс .recording добавляется VoiceRecorder во время записи.
+ */
+
+#start-voice-recording,
+#start-chat-roller-voice-recording {
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    cursor: pointer;
+}
+
+#start-voice-recording.recording,
+#start-chat-roller-voice-recording.recording {
+    opacity: 0.6;
+    animation: voice-recorder-pulse 1s ease-in-out infinite;
+}
+
+@keyframes voice-recorder-pulse {
+    0%, 100% { opacity: 0.6; }
+    50%       { opacity: 1;   }
+}
+
+#start-voice-recording:disabled,
+#start-chat-roller-voice-recording:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}

@@ -1,0 +1,92 @@
+.med-row-block { }
+
+.med-row-block__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: .75rem;
+}
+.med-row-block__title { font-size: 1rem; font-weight: 700; color: #222; }
+.med-row-block__sub   { font-size: .78rem; color: #aaa; margin-top: .1rem; }
+.med-row-block__more  { font-size: .84rem; color: var(--color-primary, #6c5ce7); text-decoration: none; white-space: nowrap; }
+
+.med-row-scroll {
+    display: flex;
+    gap: .75rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+}
+.med-row-scroll::-webkit-scrollbar { display: none; }
+
+.med-row-card {
+    position: relative;
+    flex-shrink: 0;
+    width: 165px;
+    height: 200px;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,.14);
+    display: flex;
+    flex-direction: column;
+}
+.med-row-card__bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover !important;
+    background-position: center !important;
+}
+.med-row-card__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,.08) 0%, rgba(0,0,0,.68) 100%);
+}
+.med-row-card__cart {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    z-index: 2;
+    width: 1.8rem;
+    height: 1.8rem;
+    background: rgba(255,255,255,.18);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+}
+.med-row-card__cart:hover,
+.med-row-card__cart.in-cart { background: rgba(108,92,231,.7); }
+.med-row-card__body {
+    position: relative;
+    z-index: 1;
+    margin-top: auto;
+    padding: .5rem .65rem .15rem;
+}
+.med-row-card__title { color: #fff; font-size: .82rem; font-weight: 700; line-height: 1.3; }
+.med-row-card__footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .3rem .65rem .6rem;
+}
+.med-row-card__demo  { color: #fff; font-size: .72rem; opacity: .85; }
+.med-row-card__price { color: #fff; font-size: .78rem; font-weight: 700; }
+
+/* Купленная медитация */
+.med-row-card--owned .med-row-card__bg::after {
+    background: linear-gradient(to bottom, rgba(0,180,120,.15) 0%, rgba(0,0,0,.62) 100%);
+}
+.med-row-card__play-full {
+    color: #55efc4;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+}
