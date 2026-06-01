@@ -120,7 +120,7 @@ require dirname(__DIR__) . '/_layout.php';
             </td>
             <td style="color:var(--muted);text-align:center"><?php echo $e['msg_count']; ?></td>
             <td style="color:var(--muted);white-space:nowrap;font-size:12px"><?php echo date('d.m.Y H:i', strtotime($e['created_at'])); ?></td>
-            <td><a href="/admin/diary/view.php?id=<?php echo $e['id']; ?>" class="adm-btn adm-btn--ghost adm-btn--sm">Открыть →</a></td>
+            <td style="white-space:nowrap"><a href="/admin/diary/view.php?id=<?php echo $e['id']; ?>" class="adm-btn adm-btn--ghost adm-btn--sm" style="white-space:nowrap">Открыть →</a></td>
         </tr>
         <?php endforeach; ?>
         <?php if (empty($entries)): ?>

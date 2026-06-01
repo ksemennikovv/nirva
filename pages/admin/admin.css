@@ -247,7 +247,7 @@ body {
 .adm-btn--primary  { background: var(--accent); color: #fff; }
 .adm-btn--danger   { background: var(--danger);  color: #fff; }
 .adm-btn--ghost    { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-.adm-btn--sm       { padding: 4px 10px; font-size: 12px; }
+.adm-btn--sm       { padding: 4px 10px; font-size: 12px; white-space: nowrap; }
 
 /* ── Forms ───────────────────────────────────────────────────────────────── */
 .adm-form { display: flex; flex-direction: column; gap: 16px; }
