@@ -18,7 +18,7 @@ $subRepo   = new SubscriptionRepository();
 
 $subscription = $subRepo->getActive($currentUserId);
 $entryCount   = $diaryRepo->countUserEntries($currentUserId);
-$freeLimit    = BusinessConfig::DIARY_FREE_ENTRIES_LIMIT;
+$freeLimit    = BusinessConfig::diaryFreeEntriesLimit();
 
 if (!$subscription && $entryCount >= $freeLimit) {
     echo json_encode(['success' => false, 'error' => 'limit_reached']);

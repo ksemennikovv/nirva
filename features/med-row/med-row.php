@@ -27,6 +27,8 @@ foreach ($medRowItems as $m) {
         'image_url'       => $m['image_url'] ?? '',
         'gradient'        => 'linear-gradient(145deg,#2d3436,#636e72)',
         'free'            => $isPurchased,
+        'type'            => $m['type'] ?? 'personal',
+        'last_listened_at'=> $m['last_listened_at'] ?? null,
     ];
 }
 $medRowSlug    = $medRowSlug    ?? 'meditations';
@@ -58,7 +60,7 @@ $medRowMoreUrl = $medRowMoreUrl ?? '';
              data-slug="<?php echo htmlspecialchars($medRowSlug); ?>" data-idx="<?php echo $idx; ?>" style="cursor:pointer">
             <div class="med-row-card__bg" style="background:<?php echo $bg; ?>"></div>
             <?php if (!$isPurchased): ?>
-            <button class="med-row-card__cart" data-cart-id="<?php echo (int)$med['id']; ?>" type="button">
+            <button class="med-row-card__cart" data-cart-id="<?php echo (int)$med['id']; ?>" data-cart-icon="1" type="button" aria-label="В корзину">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>

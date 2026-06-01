@@ -3,6 +3,7 @@ session_start();
 $root = dirname(__DIR__, 2);
 require_once $root . '/config/app.php';
 require_once $root . '/config/database.php';
+require_once $root . '/assets/php/helpers.php';
 require_once $root . '/src/middleware/auth.php';
 require_once $root . '/src/services/Database/Database.php';
 require_once $root . '/src/middleware/subscription.php';
@@ -40,18 +41,22 @@ $paywallMode = $chatNotDone && $subPaywallActive;
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <title><?php echo htmlspecialchars($analysis['topic'] ?? 'Разбор'); ?> — Nirva</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="stylesheet" href="/pages/analysis/analysis.css">
-    <link rel="stylesheet" href="/features/med-row/med-row.css">
+    <link rel="stylesheet" href="<?= asset_url('/assets/css/main.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('/pages/analysis/analysis.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('/features/med-row/med-row.css') ?>">
 </head>
 <body>
 
+<div class="phone phone--full">
+
 <header class="app-header">
-    <a href="/archive/" class="app-header__back">← Архив</a>
-    <span class="app-header__logo">Nirva</span>
-    <a href="/logout/" class="app-header__logout">Выйти</a>
+    <a href="/archive/" class="app-header__back">
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Архив
+    </a>
+    <a href="/dashboard/" class="app-header__logo-orb" style="width:36px;height:36px;font-size:14px">N</a>
 </header>
 
 <main class="analysis-page" data-analysis-id="<?php echo $analysisId; ?>">
@@ -91,10 +96,10 @@ $paywallMode = $chatNotDone && $subPaywallActive;
     <section class="analysis-block" id="block-summary" data-collapsed="<?php echo $practiceCompleted ? 'true' : 'false'; ?>">
         <div class="analysis-block__header">
             <h2>Разбор</h2>
-            <button class="analysis-block__toggle" type="button">Свернуть</button>
+            <button class="analysis-block__toggle" type="button"><?php echo $practiceCompleted ? 'Развернуть' : 'Свернуть'; ?></button>
         </div>
         <div class="analysis-block__body">
-            <?php if ($analysis['analysis_summary']): ?>
+            <?php if (!empty($analysis['analysis_summary'])): ?>
                 <p class="analysis-summary__text"><?php echo nl2br(htmlspecialchars($analysis['analysis_summary'])); ?></p>
             <?php endif; ?>
             <button class="btn-secondary" id="btn-show-chat" type="button">Посмотреть весь диалог</button>
@@ -120,10 +125,14 @@ $paywallMode = $chatNotDone && $subPaywallActive;
     <section class="analysis-block" id="block-task" data-collapsed="<?php echo $practiceCompleted ? 'true' : 'false'; ?>">
         <div class="analysis-block__header">
             <h2>Ваше задание</h2>
-            <button class="analysis-block__toggle" type="button">Свернуть</button>
+            <button class="analysis-block__toggle" type="button"><?php echo $practiceCompleted ? 'Развернуть' : 'Свернуть'; ?></button>
         </div>
         <div class="analysis-block__body">
-            <p><?php echo nl2br(htmlspecialchars($analysis['personal_task'] ?? '')); ?></p>
+            <?php if (!empty($analysis['personal_task'])): ?>
+                <p><?php echo nl2br(htmlspecialchars($analysis['personal_task'])); ?></p>
+            <?php else: ?>
+                <p class="muted">Задание появится после завершения разбора.</p>
+            <?php endif; ?>
         </div>
     </section>
 
@@ -131,7 +140,7 @@ $paywallMode = $chatNotDone && $subPaywallActive;
     <section class="analysis-block" id="block-practice" data-collapsed="<?php echo $practiceCompleted ? 'true' : 'false'; ?>">
         <div class="analysis-block__header">
             <h2>Практика: <?php echo htmlspecialchars($analysis['selected_practice'] ?? ''); ?></h2>
-            <button class="analysis-block__toggle" type="button">Свернуть</button>
+            <button class="analysis-block__toggle" type="button"><?php echo $practiceCompleted ? 'Развернуть' : 'Свернуть'; ?></button>
         </div>
         <div class="analysis-block__body">
             <div class="practice-video">
@@ -212,13 +221,16 @@ $chatRollerCloseMode = 'back';
 require_once $root . '/features/chat-roller/chat-roller.php';
 ?>
 
-<script src="/assets/js/main.js"></script>
+<script src="<?= asset_url('/assets/js/main.js') ?>"></script>
 <script>const ANALYSIS_PAYWALL = <?php echo $paywallMode ? 'true' : 'false'; ?>;</script>
-<script src="/pages/analysis/analysis.js"></script>
+<script src="<?= asset_url('/pages/analysis/analysis.js') ?>"></script>
 <?php
 require_once $root . '/src/services/Payment/PaymentService.php';
 $prices = PaymentService::getPrices();
 require_once $root . '/features/plan-modal/plan-modal.php';
+require_once $root . '/features/med-player/med-player.php';
 ?>
+
+</div><!-- /.phone -->
 </body>
 </html>

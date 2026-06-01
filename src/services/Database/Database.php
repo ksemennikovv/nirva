@@ -95,4 +95,11 @@ class Database
         // Возвращаем соединение — новое (только что созданное) или ранее сохранённое.
         return self::$connection;
     }
+
+    /** Принудительно пересоздаёт соединение (нужно после долгих операций). */
+    public static function reconnect(): void
+    {
+        self::$connection = null;
+        self::getConnection();
+    }
 }

@@ -270,16 +270,26 @@
 }
 .med-modal__btn--primary:hover { opacity: .88; }
 
-/* ── Полная версия (куплено) ────────────────────────────────────────────────── */
-.med-modal__player--full .med-modal__play {
-    background: #00b894;
+/* ── Большая кнопка Play для купленных медитаций ───────────────────────────── */
+.med-modal__play-full-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--gold1, #f5b848), var(--gold3, #e89b2c));
+    border: none;
+    border-radius: 14px;
+    color: #3B1F0A;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: opacity .15s, transform .1s;
+    letter-spacing: .2px;
 }
-.med-modal__play-label--full {
-    color: #55efc4;
-}
-.med-modal__player--full .med-modal__bar {
-    background: rgba(0, 184, 148, .35);
-}
+.med-modal__play-full-btn:hover { opacity: .92; transform: scale(1.01); }
 .med-modal__player--full .med-modal__bar.played {
     background: #00b894;
 }

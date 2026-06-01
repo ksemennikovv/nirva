@@ -60,8 +60,12 @@
     justify-content: center;
     transition: background .15s;
 }
-.med-row-card__cart:hover,
-.med-row-card__cart.in-cart { background: rgba(108,92,231,.7); }
+.med-row-card__cart:hover { background: rgba(255,255,255,.3); }
+.med-row-card__cart.in-cart {
+    background: var(--gold2);
+    border-color: var(--gold2);
+    color: #3B1F0A;
+}
 .med-row-card__body {
     position: relative;
     z-index: 1;

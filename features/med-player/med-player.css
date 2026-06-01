@@ -1,0 +1,527 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Med Player — mini-bar + полноэкранный плеер (VK / Яндекс Музыка стиль)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Mini-bar — фиксирован внизу экрана ──────────────────────────────── */
+
+.mp-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--card);
+    border-top: 1px solid var(--bd);
+    user-select: none;
+    z-index: 100;
+    cursor: pointer;
+    /* Тень вверх чтобы отделить от контента */
+    box-shadow: 0 -2px 16px rgba(15,27,45,.08);
+}
+
+.mp-bar__progress-line {
+    height: 2px;
+    background: var(--bd);
+    position: relative;
+}
+.mp-bar__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold1), var(--gold3));
+    width: 0%;
+    pointer-events: none;
+    transition: width .3s linear;
+}
+
+.mp-bar__body {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px 12px;
+}
+
+.mp-bar__cover {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--gold1), var(--gold3));
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.mp-bar__info { flex: 1; min-width: 0; }
+.mp-bar__title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--t1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mp-bar__time {
+    font-size: 11px;
+    color: var(--t4);
+    margin-top: 2px;
+}
+
+.mp-bar__controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.mp-bar__sleep {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold3);
+    background: var(--gold-bg);
+    border-radius: 6px;
+    padding: 2px 6px;
+}
+
+.mp-bar__btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    color: var(--t1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .15s;
+    padding: 0;
+    flex-shrink: 0;
+}
+.mp-bar__btn:hover { background: rgba(15,27,45,.07); }
+.mp-bar__btn:active { transform: scale(.9); }
+.mp-bar__btn--expand { color: var(--t3); }
+
+/* ── Full-screen player — фиксирован на весь вьюпорт ────────────────── */
+
+.mp-full {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 100%;
+    max-width: 600px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateX(-50%) translateY(100%);
+    transition: transform .38s cubic-bezier(.22,1,.36,1);
+    /* Базовый тёмный фон — всегда непрозрачен, даже без картинки */
+    background: #0f0f1a;
+}
+
+.mp-full.open {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── Фон ─────────────────────────────────────────────────────────────── */
+
+.mp-full__bg {
+    position: absolute;
+    inset: -40px;
+    background-size: cover;
+    background-position: center;
+    filter: blur(40px) brightness(.45) saturate(1.5);
+    z-index: 0;
+    transition: background-image .5s;
+}
+
+.mp-full__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(0,0,0,.45) 0%,
+        rgba(0,0,0,.25) 30%,
+        rgba(0,0,0,.60) 70%,
+        rgba(0,0,0,.85) 100%
+    );
+    z-index: 1;
+}
+
+/* ── Шапка ───────────────────────────────────────────────────────────── */
+
+.mp-full__topbar {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+    touch-action: none;
+}
+
+.mp-full__handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,.3);
+    margin: 10px auto 0;
+}
+
+.mp-full__topbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 14px 2px;
+}
+
+.mp-full__topbar-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,.6);
+    letter-spacing: .2px;
+    text-align: center;
+    flex: 1;
+}
+
+.mp-full__close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    border: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .15s;
+    flex-shrink: 0;
+}
+.mp-full__close:hover { background: rgba(255,255,255,.25); }
+
+/* ── Скролл-контейнер ────────────────────────────────────────────────── */
+
+.mp-full__scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 8px 24px 32px;
+    position: relative;
+    z-index: 2;
+    scrollbar-width: none;
+}
+.mp-full__scroll::-webkit-scrollbar { display: none; }
+
+/* ── Обложка ─────────────────────────────────────────────────────────── */
+
+.mp-full__cover-wrap {
+    width: min(260px, 72vw);
+    aspect-ratio: 1 / 1;
+    margin: 4px auto 0;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,.55);
+    flex-shrink: 0;
+}
+
+.mp-full__cover {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: background .4s;
+}
+
+/* ── Мета ────────────────────────────────────────────────────────────── */
+
+.mp-full__meta {
+    text-align: center;
+    flex-shrink: 0;
+}
+.mp-full__title {
+    font-size: 21px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -.3px;
+    line-height: 1.2;
+}
+.mp-full__desc {
+    font-size: 13px;
+    color: rgba(255,255,255,.6);
+    margin-top: 8px;
+    line-height: 1.55;
+    padding: 0 4px;
+}
+
+/* ── Прогресс-бар ────────────────────────────────────────────────────── */
+
+.mp-full__seek-wrap { flex-shrink: 0; }
+
+.mp-full__seek-track {
+    position: relative;
+    height: 4px;
+    background: rgba(255,255,255,.22);
+    border-radius: 2px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+.mp-full__seek-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 2px;
+    width: 0%;
+    pointer-events: none;
+}
+.mp-full__seek-thumb {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.35);
+    pointer-events: none;
+    transition: left .3s linear;
+}
+.mp-full__seek-times {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(255,255,255,.45);
+}
+
+/* ── Контролы ────────────────────────────────────────────────────────── */
+
+.mp-full__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.mp-full__ctrl {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,.8);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    flex-shrink: 0;
+    transition: opacity .15s, transform .1s;
+}
+.mp-full__ctrl:hover { opacity: .65; }
+.mp-full__ctrl:active { transform: scale(.9); }
+
+.mp-full__ctrl--play {
+    width: 70px;
+    height: 70px;
+    background: #fff;
+    color: #1a1a2e;
+    border-radius: 50%;
+    box-shadow: 0 8px 28px rgba(0,0,0,.4);
+    position: relative;
+}
+/* Hover-эффект — подсветка вокруг кнопки */
+.mp-full__ctrl--play::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.0);
+    transition: background .2s;
+    pointer-events: none;
+}
+.mp-full__ctrl--play:hover { opacity: 1; transform: scale(1.05); }
+.mp-full__ctrl--play:hover::after { background: rgba(255,255,255,.12); }
+.mp-full__ctrl--play:active { transform: scale(.95); opacity: 1; }
+.mp-full__ctrl--play.playing {
+    box-shadow: 0 8px 28px rgba(0,0,0,.4), 0 0 0 8px rgba(255,255,255,.1);
+}
+
+.mp-full__ctrl--side { color: rgba(255,255,255,.7); }
+
+.mp-full__ctrl--skip {
+    width: 60px;
+    height: 60px;
+    color: rgba(255,255,255,.85);
+}
+
+/* Play/pause icon switching via CSS */
+.mp-full__ctrl--play .mp-full__icon-pause { display: none; }
+.mp-full__ctrl--play.playing .mp-full__icon-play  { display: none; }
+.mp-full__ctrl--play.playing .mp-full__icon-pause { display: block; }
+
+/* Mini-bar play/pause icon switching */
+#mp-bar-play .mp-icon-pause { display: none; }
+#mp-bar-play.playing .mp-icon-play  { display: none; }
+#mp-bar-play.playing .mp-icon-pause { display: block; }
+
+.mp-full__ctrl--prev[disabled],
+.mp-full__ctrl--next[disabled] { opacity: .25; pointer-events: none; }
+
+/* ── Дополнительные кнопки ───────────────────────────────────────────── */
+
+.mp-full__extras {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.mp-full__extra {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,.12);
+    backdrop-filter: blur(10px);
+    border: none;
+    color: rgba(255,255,255,.7);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 10px 24px;
+    border-radius: 22px;
+    transition: background .15s, color .15s;
+    flex: 1;
+    max-width: 140px;
+}
+.mp-full__extra:hover { background: rgba(255,255,255,.2); color: #fff; }
+.mp-full__extra.active { background: rgba(255,255,255,.25); color: #fff; }
+
+/* ── Очередь ─────────────────────────────────────────────────────────── */
+
+.mp-full__queue {
+    flex-shrink: 0;
+    border-top: 1px solid rgba(255,255,255,.12);
+    padding-top: 12px;
+}
+
+/* ── Вкладки очереди ─────────────────────────────────────────────────── */
+
+.mp-queue-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.mp-queue-tab {
+    flex: 1;
+    padding: 8px 12px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,.55);
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+    text-align: center;
+}
+.mp-queue-tab:hover { background: rgba(255,255,255,.18); color: rgba(255,255,255,.85); }
+.mp-queue-tab.active {
+    background: rgba(255,255,255,.22);
+    border-color: rgba(255,255,255,.3);
+    color: #fff;
+}
+
+.mp-queue-empty {
+    font-size: 13px;
+    color: rgba(255,255,255,.35);
+    text-align: center;
+    padding: 20px 0;
+}
+
+.mp-full__queue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mp-queue-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background .15s;
+}
+.mp-queue-item:hover { background: rgba(255,255,255,.08); }
+.mp-queue-item.active { background: rgba(255,255,255,.13); }
+
+.mp-queue-item__cover {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+.mp-queue-item__info { flex: 1; min-width: 0; }
+.mp-queue-item__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mp-queue-item.active .mp-queue-item__title { color: #fff; font-weight: 700; }
+.mp-queue-item__playing {
+    font-size: 11px;
+    color: rgba(255,255,255,.45);
+    margin-top: 2px;
+}
+
+/* ── Sleep timer picker ──────────────────────────────────────────────── */
+
+.mp-sleep-picker {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(20,20,35,.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px 20px 0 0;
+    padding: 16px 20px 36px;
+    z-index: 10;
+    animation: slideUp .25s cubic-bezier(.22,1,.36,1);
+    color: #fff;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.mp-sleep-picker__title {
+    font-size: 14px; font-weight: 700; color: #fff;
+    margin-bottom: 16px; text-align: center;
+}
+.mp-sleep-picker__opts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+.mp-sleep-picker__opts button {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 10px;
+    padding: 13px 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,.75);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    text-align: center;
+}
+.mp-sleep-picker__opts button:hover { background: rgba(255,255,255,.2); color: #fff; }
+.mp-sleep-picker__opts button.active { background: #fff; color: #1a1a2e; border-color: #fff; }

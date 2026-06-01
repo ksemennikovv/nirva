@@ -159,9 +159,17 @@ const MedCart = {
         document.querySelectorAll('[data-cart-id]').forEach(btn => {
             const id     = parseInt(btn.dataset.cartId, 10);
             const inCart = MedCart.has(id);
-            btn.textContent    = inCart ? '✓ В корзине' : 'В корзину';
             btn.dataset.inCart = inCart ? '1' : '0';
             btn.classList.toggle('in-cart', inCart);
+            // Кнопки со span-текстом (med-card__cart-text) — меняем только span
+            const textSpan = btn.querySelector('.med-card__cart-text');
+            if (textSpan) {
+                textSpan.textContent = inCart ? 'В корзине' : 'В корзину';
+            } else if (!btn.dataset.cartIcon) {
+                // Кнопки без иконки — меняем весь текст
+                btn.textContent = inCart ? '✓ В корзине' : 'В корзину';
+            }
+            // data-cart-icon=1 (только иконка) — только класс, без текста
         });
         // Синхронизация кнопки в MedModal если открыт
         const modalCartBtn = document.getElementById('med-modal-cart-btn');

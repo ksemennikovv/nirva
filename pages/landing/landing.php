@@ -1,3 +1,4 @@
+<?php require_once dirname(__DIR__, 2) . '/assets/php/helpers.php'; ?>
 <!DOCTYPE html>
 <!--
     pages/landing/landing.php — Сборка landing-страницы.
@@ -20,25 +21,40 @@
     <title>Nirva</title>
 
     <!-- Глобальные стили (один раз на всё приложение) -->
-    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="<?= asset_url('/assets/css/main.css') ?>">
 
     <!-- Стили layout landing-страницы (собственный asset landing-feature) -->
-    <link rel="stylesheet" href="/pages/landing/landing.css">
+    <link rel="stylesheet" href="<?= asset_url('/pages/landing/landing.css') ?>">
+
+    <!-- Лендинг скроллируемый: переопределяем overflow:hidden из main.css -->
+    <style>
+        body {
+            overflow: auto;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 16px 0;
+        }
+    </style>
 </head>
 <body>
 
-<div class="landing">
+<div class="phone landing">
 
-    <!--
-        Каждый include — self-contained feature-модуль.
-        Он сам подключает свои CSS и JS внутри своего .php файла.
-    -->
+    <header class="landing-header">
+        <div class="landing-header__orb">N</div>
+        <div>
+            <div class="landing-header__brand">NIRVA</div>
+            <div class="landing-header__sub">Телесные практики</div>
+        </div>
+    </header>
 
-    <?php include 'includes/hero-states/default-hero/default-hero.php'; ?>
-
-    <?php include 'includes/hero-states/unfinished-analysis/unfinished-analysis.php'; ?>
-
-    <?php include 'includes/hero-states/registration-gate/registration-gate.php'; ?>
+    <div class="landing-body">
+        <?php include 'includes/hero-states/default-hero/default-hero.php'; ?>
+        <?php include 'includes/hero-states/unfinished-analysis/unfinished-analysis.php'; ?>
+        <?php include 'includes/hero-states/registration-gate/registration-gate.php'; ?>
+    </div>
 
 </div>
 
@@ -57,10 +73,10 @@
 <?php include __DIR__ . '/../../features/voice-recorder/voice-recorder.php'; ?>
 
 <!-- JS landing-feature (определяет HeroStatesManager) -->
-<script src="/pages/landing/landing.js"></script>
+<script src="<?= asset_url('/pages/landing/landing.js') ?>"></script>
 
 <!-- Глобальный init-координатор — загружается последним -->
-<script src="/assets/js/main.js"></script>
+<script src="<?= asset_url('/assets/js/main.js') ?>"></script>
 
 </body>
 </html>

@@ -11,6 +11,7 @@ $activeNav = $activeNav ?? '';
 if (!isset($supervisorPending)) {
     require_once dirname(__DIR__, 2) . '/config/business.php';
     require_once dirname(__DIR__, 2) . '/src/services/Database/Database.php';
+    require_once dirname(__DIR__, 2) . '/assets/php/helpers.php';
     $supervisorPending = BusinessConfig::isSupervisorMode()
         ? (int)Database::getConnection()->query("SELECT COUNT(*) FROM messages WHERE role='assistant' AND review_status='pending_review'")->fetchColumn()
         : 0;
@@ -22,11 +23,14 @@ if (!isset($supervisorPending)) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo htmlspecialchars($pageTitle); ?> — Nirva Admin</title>
-    <link rel="stylesheet" href="/pages/admin/admin.css">
+    <link rel="stylesheet" href="<?= asset_url('/pages/admin/admin.css') ?>">
 </head>
 <body>
 
-<aside class="adm-sidebar">
+<!-- Оверлей для мобильного сайдбара -->
+<div class="adm-sidebar-overlay" id="adm-overlay"></div>
+
+<aside class="adm-sidebar" id="adm-sidebar">
     <div class="adm-sidebar__logo">
         Nirva
         <span>Панель администратора</span>
@@ -64,6 +68,13 @@ if (!isset($supervisorPending)) {
         <a href="/admin/diary/" class="<?php echo $activeNav === 'diary' ? 'active' : ''; ?>">
             📔 Дневник
         </a>
+        <a href="/admin/practices/" class="<?php echo $activeNav === 'practices' ? 'active' : ''; ?>">
+            🏋️ Практики
+        </a>
+        <div class="adm-nav__sep"></div>
+        <a href="/admin/settings/" class="<?php echo $activeNav === 'settings' ? 'active' : ''; ?>">
+            ⚙️ Настройки
+        </a>
     </nav>
 
     <div class="adm-sidebar__exit">
@@ -71,8 +82,16 @@ if (!isset($supervisorPending)) {
     </div>
 </aside>
 
+
 <main class="adm-main">
     <div class="adm-topbar">
+        <button class="adm-burger" id="adm-burger" aria-label="Меню">
+            <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+                <rect width="18" height="2" rx="1" fill="currentColor"/>
+                <rect y="6" width="18" height="2" rx="1" fill="currentColor"/>
+                <rect y="12" width="12" height="2" rx="1" fill="currentColor"/>
+            </svg>
+        </button>
         <h1><?php echo htmlspecialchars($pageTitle); ?></h1>
         <span style="font-size:12px;color:var(--muted)"><?php echo htmlspecialchars($adminUser['email'] ?? ''); ?></span>
     </div>

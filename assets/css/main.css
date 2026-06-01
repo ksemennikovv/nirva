@@ -1,49 +1,314 @@
 /*
- * assets/css/main.css — Глобальные стили приложения Nirva.
- *
- * Подключается один раз в landing.php (и в будущих страницах).
- * Содержит только по-настоящему глобальные правила:
- *   - CSS reset / normalize
- *   - CSS-переменные (design tokens)
- *   - базовая типографика
- *
- * Стили отдельных features — в их собственных scoped CSS-файлах.
+ * assets/css/main.css — Глобальные стили приложения Nirva v4.
+ * Дизайн-система: Onest font, gold accent, phone-wrapper layout.
  */
 
+/* ─── Шрифт ───────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap');
+
 /* ─── CSS-переменные (design tokens) ─────────────────────────────────────── */
-
 :root {
-    --color-accent:      #E8A050;   /* оранжевый акцент (highlights, CTA) */
-    --color-text:        #1a1a1a;   /* основной текст */
-    --color-text-muted:  #888888;   /* второстепенный текст */
-    --color-border:      #d0d0d0;   /* рамки и разделители */
-    --color-bg:          #ffffff;   /* фон страницы */
+    --bg:         #f2f9ff;
+    --card:       #FFFFFF;
+    --t1:         #0F1B2D;
+    --t2:         #3D4D63;
+    --t3:         #6B7889;
+    --t4:         #A0A8B5;
+    --bd:         #E2E8F0;
+    --gold1:      #FFD974;
+    --gold2:      #F5B848;
+    --gold3:      #E89B2C;
+    --gold-bg:    rgba(245,184,72,.10);
+    --gold-bg2:   rgba(245,184,72,.06);
+    --orange:     #E8713A;
+    --success:    #00B894;
+    --success-bg: rgba(0,184,148,.08);
+    --danger:     #E05050;
+    --radius:     16px;
 
+    /* Обратная совместимость со старыми страницами */
+    --color-accent:     var(--gold2);
+    --color-text:       var(--t1);
+    --color-text-muted: var(--t3);
+    --color-border:     var(--bd);
+    --color-bg:         var(--bg);
+    --color-primary:    var(--gold3);
     --radius-sm:  8px;
     --radius-md:  12px;
-    --radius-lg:  16px;
-
-    --font-base:  15px;
-    --line-height: 1.5;
+    --radius-lg:  var(--radius);
 }
 
 /* ─── Базовый reset ───────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+html { -webkit-text-size-adjust: 100%; }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: var(--font-base);
-    line-height: var(--line-height);
-    color: var(--color-text);
-    background: var(--color-bg);
+    font-family: 'Onest', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--t1);
+    background: var(--bg);
+    min-height: 100vh;
 }
 
-/* Гарантирует корректную работу HeroStatesManager (hidden-атрибут) */
-[hidden] {
-    display: none !important;
+[hidden] { display: none !important; }
+
+/* ─── Страничный контейнер (бывший phone-wrapper) ────────────────────────── */
+.phone {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--bg);
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
+
+/* phone--full больше не ограничивает высоту — просто наследует поведение */
+.phone--full {
+    min-height: 100dvh;
+}
+
+/* ─── App Header ──────────────────────────────────────────────────────────── */
+.app-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px 14px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+    border-bottom: 1px solid var(--bd);
+}
+
+.app-header__logo-orb {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold1), var(--gold3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: #3B1F0A;
+    box-shadow: 0 4px 12px rgba(245,184,72,.35);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.app-header__text { flex: 1; }
+.app-header__brand {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--t1);
+    letter-spacing: 1.2px;
+    line-height: 1.2;
+}
+.app-header__sub {
+    font-size: 11px;
+    color: var(--t3);
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.app-header__burger {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    color: var(--t1);
+    flex-shrink: 0;
+    transition: background .2s;
+    padding: 0;
+}
+.app-header__burger:hover { background: rgba(15,27,45,.06); }
+
+.app-header__back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--t2);
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+.app-header__back:hover { color: var(--t1); }
+
+/* ─── Drawer ──────────────────────────────────────────────────────────────── */
+.drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,27,45,.45);
+    z-index: 100;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+.drawer-overlay.open { display: block; animation: drawerOverlayIn .25s ease; }
+@keyframes drawerOverlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+.drawer {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 82%;
+    max-width: 320px;
+    background: var(--bg);
+    z-index: 101;
+    transform: translateX(100%);
+    transition: transform .32s cubic-bezier(.22,1,.36,1);
+    overflow-y: auto;
+    border-radius: 24px 0 0 24px;
+    box-shadow: -8px 0 32px rgba(15,27,45,.15);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 24px;
+}
+.drawer.open { transform: translateX(0); }
+
+.drawer-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 20px 16px;
+}
+.drawer-avatar {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold1), var(--gold3));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: #3B1F0A;
+    flex-shrink: 0;
+}
+.drawer-user-info { flex: 1; }
+.drawer-user-name  { font-size: 14px; font-weight: 700; color: var(--t1); }
+.drawer-user-email { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.drawer-close {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(15,27,45,.05);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--t3); flex-shrink: 0;
+    border: none;
+    transition: background .2s;
+}
+.drawer-close:hover { background: rgba(15,27,45,.1); }
+
+.drawer-divider { height: 1px; background: var(--bd); margin: 8px 20px; }
+
+.drawer-nav { display: flex; flex-direction: column; padding: 0 8px; }
+.drawer-nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background .15s;
+    color: var(--t2);
+    text-decoration: none;
+}
+.drawer-nav-item:hover { background: rgba(255,255,255,.7); }
+.drawer-nav-item.active {
+    background: #fff; color: var(--t1);
+    box-shadow: 0 2px 10px rgba(15,27,45,.07);
+}
+.drawer-nav-ic {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: rgba(15,27,45,.05);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: var(--t3);
+    font-size: 16px;
+}
+.drawer-nav-item.active .drawer-nav-ic { background: var(--gold-bg); color: var(--gold3); }
+.drawer-nav-item span { font-size: 13px; font-weight: 500; flex: 1; }
+.drawer-nav-item.active span { font-weight: 700; color: var(--t1); }
+
+.drawer-logout {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 22px; margin: 0 8px;
+    border-radius: 12px; cursor: pointer;
+    transition: background .15s;
+    color: var(--orange);
+    text-decoration: none;
+}
+.drawer-logout:hover { background: rgba(255,255,255,.7); }
+.drawer-logout span { font-size: 14px; font-weight: 500; }
+
+/* ─── Общие компоненты ────────────────────────────────────────────────────── */
+
+/* Карточка */
+.card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--bd);
+    box-shadow: 0 2px 12px rgba(15,27,45,.05);
+    padding: 20px;
+}
+
+/* Кнопка — золотой CTA */
+.btn-gold {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold1) 0%, var(--gold2) 45%, var(--gold3) 100%);
+    border: none; border-radius: var(--radius);
+    padding: 16px 20px;
+    font-family: inherit; font-size: 15px; font-weight: 700; color: #3B1F0A;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(232,155,44,.28), inset 0 1px 0 rgba(255,255,255,.45);
+    transition: opacity .15s, transform .15s;
+    text-decoration: none;
+}
+.btn-gold:hover { opacity: .92; transform: translateY(-1px); }
+.btn-gold:active { transform: translateY(0); opacity: 1; }
+
+/* Вторичная кнопка */
+.btn-outline {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%;
+    background: transparent;
+    border: 1.5px solid var(--bd); border-radius: var(--radius);
+    padding: 14px 20px;
+    font-family: inherit; font-size: 14px; font-weight: 600; color: var(--t2);
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+    text-decoration: none;
+}
+.btn-outline:hover { border-color: var(--gold2); color: var(--t1); }
+
+/* Первичная кнопка (старый класс) */
+.btn-primary {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--gold1), var(--gold3));
+    border: none; border-radius: 10px;
+    padding: 10px 20px;
+    font-family: inherit; font-size: 14px; font-weight: 700; color: #3B1F0A;
+    cursor: pointer; transition: opacity .15s;
+}
+.btn-primary:hover { opacity: .88; }
+
+/* Анимации */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* Утилиты */
+.text-muted { color: var(--t3); }
+.text-gold   { color: var(--gold3); }
+.text-orange { color: var(--orange); }
+.text-success { color: var(--success); }

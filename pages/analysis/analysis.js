@@ -28,12 +28,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ── Скролл к Итогам если разбор завершён ─────────────────────────────────
+    const blockResults = document.getElementById('block-results');
+    if (blockResults) {
+        setTimeout(function () {
+            const scroller = document.querySelector('.analysis-page');
+            if (!scroller) return;
+            const targetTop = blockResults.offsetTop - scroller.offsetTop;
+            scroller.scrollTo({ top: targetTop, behavior: 'smooth' });
+        }, 150);
+    }
+
     // ── Collapsible блоки ─────────────────────────────────────────────────────
     document.querySelectorAll('.analysis-block__header').forEach(header => {
         header.addEventListener('click', function () {
             const block     = this.closest('.analysis-block');
             const collapsed = block.dataset.collapsed === 'true';
             block.dataset.collapsed = collapsed ? 'false' : 'true';
+            const btn = this.querySelector('.analysis-block__toggle');
+            if (btn) btn.textContent = collapsed ? 'Свернуть' : 'Развернуть';
         });
     });
 

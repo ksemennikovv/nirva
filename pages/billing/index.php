@@ -4,6 +4,7 @@ $root = dirname(__DIR__, 2);
 require_once $root . '/config/app.php';
 require_once $root . '/config/database.php';
 require_once $root . '/config/business.php';
+require_once $root . '/assets/php/helpers.php';
 require_once $root . '/src/middleware/auth.php';
 require_once $root . '/src/services/Database/Database.php';
 require_once $root . '/src/repositories/SubscriptionRepository.php';
@@ -46,17 +47,21 @@ $planDetails = BusinessConfig::PLAN_DETAILS;
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Биллинг — Nirva</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="stylesheet" href="/pages/billing/billing.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title>Тариф — Nirva</title>
+    <link rel="stylesheet" href="<?= asset_url('/assets/css/main.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('/pages/billing/billing.css') ?>">
 </head>
 <body>
 
+<div class="phone phone--full">
+
 <header class="app-header">
-    <a href="/dashboard/" class="app-header__back">← обратно</a>
-    <span class="app-header__logo">Nirva</span>
-    <a href="/logout/" class="app-header__logout">Выйти</a>
+    <a href="/dashboard/" class="app-header__back">
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Назад
+    </a>
+    <a href="/dashboard/" class="app-header__logo-orb" style="width:36px;height:36px;font-size:14px">N</a>
 </header>
 
 <main class="billing-page">
@@ -129,9 +134,11 @@ $planDetails = BusinessConfig::PLAN_DETAILS;
 
 </main>
 
+</div><!-- /.phone -->
+
 <?php require_once $root . '/features/plan-modal/plan-modal.php'; ?>
 
-<script src="/assets/js/main.js"></script>
-<script src="/pages/billing/billing.js"></script>
+<script src="<?= asset_url('/assets/js/main.js') ?>"></script>
+<script src="<?= asset_url('/pages/billing/billing.js') ?>"></script>
 </body>
 </html>

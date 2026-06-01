@@ -39,23 +39,41 @@ try {
         $sessionId = $entityId ?: (int)($_SESSION['analysis_session_id'] ?? 0);
 
         if (!$sessionId) {
-            echo json_encode(['success' => true, 'data' => ['messages' => []]]);
+            echo json_encode(['success' => true, 'data' => ['messages' => [], 'waiting' => false]]);
             exit;
         }
 
         require_once $root . '/src/repositories/MessageRepository.php';
         $messageRepo = new MessageRepository();
-        $rows        = $messageRepo->getMessages($sessionId, $mode === 'reflection' ? 'reflection' : 'analysis');
+
+        if ($mode === 'reflection') {
+            $rows = $messageRepo->getMessages($sessionId, 'reflection');
+        } else {
+            // В supervisor mode показываем только одобренные сообщения
+            $rows = $messageRepo->getApprovedMessages($sessionId, 'analysis');
+        }
+
+        // Если есть pending-сообщения — клиент должен показать typing и начать polling
+        $db           = \Database::getConnection();
+        $pendingStmt  = $db->prepare(
+            'SELECT COUNT(*) FROM messages WHERE analysis_session_id=? AND role="assistant" AND review_status="pending_review"'
+        );
+        $pendingStmt->execute([$sessionId]);
+        $hasPending = (int)$pendingStmt->fetchColumn() > 0;
     }
 
     $messages = array_map(fn($row) => [
         'role'    => $row['role'],
-        'content' => $row['content'],
+        'content' => (string)($row['content'] ?? ''),
     ], $rows);
 
     echo json_encode([
         'success' => true,
-        'data'    => ['messages' => $messages],
+        'data'    => [
+            'messages'   => $messages,
+            'waiting'    => $hasPending ?? false,
+            'session_id' => $sessionId ?? null,
+        ],
     ]);
 
 } catch (Throwable $e) {

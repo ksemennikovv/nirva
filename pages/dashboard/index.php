@@ -4,6 +4,7 @@ $root = dirname(__DIR__, 2);
 require_once $root . '/config/app.php';
 require_once $root . '/config/database.php';
 require_once $root . '/config/business.php';
+require_once $root . '/assets/php/helpers.php';
 require_once $root . '/src/middleware/auth.php';
 require_once $root . '/src/middleware/subscription.php';
 require_once $root . '/src/services/Database/Database.php';
@@ -24,15 +25,15 @@ $remainingAnalyses = $subRemaining;
 
 // Дата следующего разбора (для state 2)
 $nextAnalysisDate = null;
-if ($lastCompleted && BusinessConfig::ANALYSIS_MIN_INTERVAL_DAYS > 0) {
+if ($lastCompleted && BusinessConfig::analysisMinIntervalDays() > 0) {
     $lastTs           = strtotime($lastCompleted['completed_at'] ?? $lastCompleted['updated_at']);
-    $nextAnalysisDate = date('d.m', $lastTs + BusinessConfig::ANALYSIS_MIN_INTERVAL_DAYS * 86400);
+    $nextAnalysisDate = date('d.m', $lastTs + BusinessConfig::analysisMinIntervalDays() * 86400);
 }
 
 // ── Дневник ───────────────────────────────────────────────────────────────────
 $showDiaryBlock    = ($heroState !== 1);
 $todayDiaryCount   = $diaryRepo->countTodayEntries($currentUserId);
-$diaryWrittenToday = $todayDiaryCount >= BusinessConfig::DASHBOARD_DIARY_DAILY_SHOW_LIMIT;
+$diaryWrittenToday = $todayDiaryCount >= BusinessConfig::dashboardDiaryDailyShowLimit();
 
 // ── Незавершённые разборы ─────────────────────────────────────────────────────
 $allSessions = $analysisRepo->getUserSessions($currentUserId);
@@ -111,24 +112,78 @@ $prices = PaymentService::getPrices();
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <title>Главная — Nirva</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="stylesheet" href="/features/med-row/med-row.css">
-    <link rel="stylesheet" href="/pages/dashboard/dashboard.css">
+    <link rel="stylesheet" href="<?= asset_url('/assets/css/main.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('/features/med-row/med-row.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('/pages/dashboard/dashboard.css') ?>">
 </head>
 <body>
 
+<div class="phone phone--full">
+
+<!-- Шапка -->
 <header class="app-header">
-    <span class="app-header__logo">Nirva</span>
-    <nav class="app-header__nav">
-        <a href="/diary/">Дневник</a>
-        <a href="/meditations/">Медитации</a>
-        <a href="/archive/">Архив</a>
-        <a href="/billing/">Тариф</a>
-        <a href="/logout/" class="app-header__logout">Выйти</a>
-    </nav>
+    <a href="/dashboard/" class="app-header__logo-orb">N</a>
+    <div class="app-header__text">
+        <div class="app-header__brand">NIRVA</div>
+        <div class="app-header__sub">Личный кабинет</div>
+    </div>
+    <button class="app-header__burger" id="open-drawer" aria-label="Меню">
+        <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+            <rect width="20" height="2" rx="1" fill="currentColor"/>
+            <rect y="6" width="20" height="2" rx="1" fill="currentColor"/>
+            <rect y="12" width="14" height="2" rx="1" fill="currentColor"/>
+        </svg>
+    </button>
 </header>
+
+<!-- Drawer overlay -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+
+<!-- Drawer -->
+<div class="drawer" id="drawer">
+    <div class="drawer-profile">
+        <div class="drawer-avatar">N</div>
+        <div class="drawer-user-info">
+            <div class="drawer-user-name"><?php echo htmlspecialchars($_SESSION['user_name'] ?? 'Пользователь'); ?></div>
+            <div class="drawer-user-email"><?php echo htmlspecialchars($_SESSION['user_email'] ?? ''); ?></div>
+        </div>
+        <button class="drawer-close" id="close-drawer">✕</button>
+    </div>
+
+    <div class="drawer-divider"></div>
+
+    <nav class="drawer-nav">
+        <a href="/dashboard/" class="drawer-nav-item active">
+            <span class="drawer-nav-ic">🏠</span>
+            <span>Главная</span>
+        </a>
+        <a href="/diary/" class="drawer-nav-item">
+            <span class="drawer-nav-ic">📖</span>
+            <span>Дневник</span>
+        </a>
+        <a href="/meditations/" class="drawer-nav-item">
+            <span class="drawer-nav-ic">🎵</span>
+            <span>Медитации</span>
+        </a>
+        <a href="/archive/" class="drawer-nav-item">
+            <span class="drawer-nav-ic">📋</span>
+            <span>Архив разборов</span>
+        </a>
+        <a href="/billing/" class="drawer-nav-item">
+            <span class="drawer-nav-ic">💳</span>
+            <span>Тариф и оплата</span>
+        </a>
+    </nav>
+
+    <div class="drawer-divider"></div>
+
+    <a href="/logout/" class="drawer-logout">
+        <span class="drawer-nav-ic">🚪</span>
+        <span>Выйти</span>
+    </a>
+</div>
 
 <main class="dashboard-page">
 
@@ -177,7 +232,7 @@ $prices = PaymentService::getPrices();
             </div>
         </div>
         <button class="db-cta-btn" id="db-start-analysis" type="button">Начать новый разбор</button>
-        <div class="db-privacy">🔒 Конфиденциально · никто не увидит запрос</div>
+        <div class="db-privacy">🔒 Конфиденциально · никто не увидит Ваш запрос</div>
     </div>
 
     <?php elseif ($heroState === 2): ?>
@@ -210,7 +265,7 @@ $prices = PaymentService::getPrices();
                 <button class="db-input-send" id="db-send-btn" type="button">отправить</button>
             </div>
         </div>
-        <div class="db-privacy">🔒 Конфиденциально · никто не увидит запрос</div>
+        <div class="db-privacy">🔒 Конфиденциально · никто не увидит Ваш запрос</div>
     </div>
 
     <?php else: ?>
@@ -226,7 +281,7 @@ $prices = PaymentService::getPrices();
                 <button class="db-input-send" id="db-send-btn" type="button">отправить</button>
             </div>
         </div>
-        <div class="db-privacy">🔒 Конфиденциально · никто не увидит запрос</div>
+        <div class="db-privacy">🔒 Конфиденциально · никто не увидит Ваш запрос</div>
     </div>
     <?php endif; ?>
 
@@ -330,8 +385,24 @@ $prices = PaymentService::getPrices();
 <?php require_once $root . '/features/plan-modal/plan-modal.php'; ?>
 <?php $chatRollerCloseMode = 'stay'; require_once $root . '/features/chat-roller/chat-roller.php'; ?>
 <?php require_once $root . '/features/med-cart/med-cart.php'; ?>
+<?php require_once $root . '/features/med-player/med-player.php'; ?>
 
-<script src="/assets/js/main.js"></script>
-<script src="/pages/dashboard/dashboard.js"></script>
+</div><!-- /.phone -->
+
+<script src="<?= asset_url('/assets/js/main.js') ?>"></script>
+<script src="<?= asset_url('/pages/dashboard/dashboard.js') ?>"></script>
+<script>
+(function(){
+    const overlay = document.getElementById('drawer-overlay');
+    const drawer  = document.getElementById('drawer');
+    const open    = document.getElementById('open-drawer');
+    const close   = document.getElementById('close-drawer');
+    function openDrawer()  { drawer.classList.add('open');  overlay.classList.add('open'); }
+    function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); }
+    open.addEventListener('click', openDrawer);
+    close.addEventListener('click', closeDrawer);
+    overlay.addEventListener('click', closeDrawer);
+})();
+</script>
 </body>
 </html>

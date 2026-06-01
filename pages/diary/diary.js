@@ -69,6 +69,47 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // ── Чипсы выбора режима ───────────────────────────────────────────────────
+    var selectedDiaryMode = null;
+
+    var chipPrefixes = {
+        vent:       'Хочу просто выговориться на тему ',
+        reflection: 'Хочу провести мини-самоанализ на ситуацию, связанную с ',
+    };
+    var chipPlaceholders = {
+        vent:       'Хочу просто выговориться на тему сегодняшнего события...',
+        reflection: 'Хочу провести мини-самоанализ на ситуацию, связанную с ...',
+    };
+    var defaultPlaceholder = 'Что сегодня было важным? Как вы себя чувствуете?';
+
+    var diaryInput = document.getElementById('diary-input');
+
+    document.querySelectorAll('.diary-compose__chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+            var prev = document.querySelector('.diary-compose__chip.active');
+            var prevMode = prev ? prev.dataset.mode : null;
+
+            document.querySelectorAll('.diary-compose__chip').forEach(function (c) { c.classList.remove('active'); });
+            this.classList.add('active');
+            selectedDiaryMode = this.dataset.mode;
+
+            if (diaryInput) {
+                var currentVal = diaryInput.value;
+                // Убираем префикс предыдущего режима если он есть
+                if (prevMode && chipPrefixes[prevMode] && currentVal.startsWith(chipPrefixes[prevMode])) {
+                    currentVal = currentVal.slice(chipPrefixes[prevMode].length);
+                }
+                // Подставляем префикс нового режима
+                diaryInput.value = chipPrefixes[selectedDiaryMode] + currentVal;
+                diaryInput.placeholder = chipPlaceholders[selectedDiaryMode];
+                diaryInput.focus();
+                // Курсор в конец
+                var len = diaryInput.value.length;
+                diaryInput.setSelectionRange(len, len);
+            }
+        });
+    });
+
     const btnStart = document.getElementById('btn-start-diary');
     if (!btnStart) return;
 
@@ -89,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (data.success) {
                 if (typeof ChatRoller !== 'undefined') {
-                    ChatRoller.openDiary(data.entry_id, text);
+                    ChatRoller.openDiary(data.entry_id, text, false, selectedDiaryMode);
                 }
             } else if (data.error === 'limit_reached') {
                 window.location.href = '/billing/';

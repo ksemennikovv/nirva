@@ -58,7 +58,7 @@ if ($subscription) {
 }
 
 // ── Hero state ────────────────────────────────────────────────────────────────
-if (!BusinessConfig::SUBSCRIPTION_REQUIRED) {
+if (!BusinessConfig::isSubscriptionRequired()) {
     // Режим без ограничений — все пользователи могут делать разборы
     $subHeroState = 1;
     $subRemaining = 999;
@@ -77,10 +77,10 @@ if (!BusinessConfig::SUBSCRIPTION_REQUIRED) {
     $_last = $_lastStmt->fetch(PDO::FETCH_ASSOC);
 
     $subHeroState = 1;
-    if ($_last && BusinessConfig::ANALYSIS_MIN_INTERVAL_DAYS > 0) {
+    if ($_last && BusinessConfig::analysisMinIntervalDays() > 0) {
         $_lastTs      = strtotime($_last['completed_at'] ?? $_last['updated_at']);
         $_daysPassed  = (int)floor((time() - $_lastTs) / 86400);
-        if ($_daysPassed < BusinessConfig::ANALYSIS_MIN_INTERVAL_DAYS) {
+        if ($_daysPassed < BusinessConfig::analysisMinIntervalDays()) {
             $subHeroState = 2;
         }
     }
@@ -88,7 +88,7 @@ if (!BusinessConfig::SUBSCRIPTION_REQUIRED) {
 
 // ── Paywall: нужно показывать стену оплаты ───────────────────────────────────
 // При SUBSCRIPTION_REQUIRED = false — paywall полностью отключён
-$subPaywallActive = BusinessConfig::SUBSCRIPTION_REQUIRED
+$subPaywallActive = BusinessConfig::isSubscriptionRequired()
     && ($subHeroState === 3 || $subHeroState === 4);
 
 // ── Дата сгорания следующего слота ────────────────────────────────────────────

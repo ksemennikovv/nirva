@@ -19,14 +19,14 @@ $focusSessionId = (int)($_GET['session_id'] ?? 0);
 // Список сессий с pending
 $sessions = $db->query("
     SELECT a.id AS session_id, a.topic, a.user_id,
-           u.email,
+           COALESCE(u.email, '—') AS email,
            COUNT(m.id) AS pending_count,
            MIN(m.created_at) AS oldest_pending
-    FROM analysis_sessions a
-    JOIN users u ON u.id = a.user_id
-    JOIN messages m ON m.analysis_session_id = a.id
+    FROM messages m
+    JOIN analysis_sessions a ON a.id = m.analysis_session_id
+    LEFT JOIN users u ON u.id = a.user_id
     WHERE m.role = 'assistant' AND m.review_status = 'pending_review'
-    GROUP BY a.id, a.topic, a.user_id, u.email
+    GROUP BY a.id
     ORDER BY oldest_pending ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
 

@@ -4,6 +4,7 @@ $root = dirname(__DIR__, 2);
 require_once $root . '/config/app.php';
 require_once $root . '/config/database.php';
 require_once $root . '/config/business.php';
+require_once $root . '/assets/php/helpers.php';
 require_once $root . '/src/middleware/auth.php';
 require_once $root . '/src/services/Database/Database.php';
 require_once $root . '/src/repositories/DiaryRepository.php';
@@ -16,7 +17,7 @@ $profileRepo = new ProfileParameterRepository();
 
 $subscription  = $subRepo->getActive($currentUserId);
 $entryCount    = $diaryRepo->countUserEntries($currentUserId);
-$freeLimit     = BusinessConfig::DIARY_FREE_ENTRIES_LIMIT;
+$freeLimit     = BusinessConfig::diaryFreeEntriesLimit();
 $canWrite      = $subscription || $entryCount < $freeLimit;
 $entries       = $diaryRepo->getUserEntries($currentUserId);
 $memories      = $profileRepo->getTopMemories($currentUserId, 3);
@@ -25,17 +26,21 @@ $memories      = $profileRepo->getTopMemories($currentUserId, 3);
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <title>Дневник — Nirva</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="stylesheet" href="/pages/diary/diary.css">
+    <link rel="stylesheet" href="<?= asset_url('/assets/css/main.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('/pages/diary/diary.css') ?>">
 </head>
 <body>
 
+<div class="phone phone--full">
+
 <header class="app-header">
-    <a href="/dashboard/" class="app-header__back">← Главная</a>
-    <span class="app-header__logo">Nirva</span>
-    <a href="/logout/" class="app-header__logout">Выйти</a>
+    <a href="/dashboard/" class="app-header__back">
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Назад
+    </a>
+    <a href="/dashboard/" class="app-header__logo-orb" style="width:36px;height:36px;font-size:14px">N</a>
 </header>
 
 <main class="diary-page">
@@ -48,8 +53,13 @@ $memories      = $profileRepo->getTopMemories($currentUserId, 3);
     <!-- ── Блок написания записи ─────────────────────────────────────────── -->
     <?php if ($canWrite): ?>
     <section class="diary-compose">
+        <p class="diary-compose__question">Что сегодня было важным для Вас? Опиши событие, мысль, эмоцию или телесное ощущение.</p>
+        <div class="diary-compose__chips">
+            <button class="diary-compose__chip" data-mode="vent">Просто выговориться</button>
+            <button class="diary-compose__chip" data-mode="reflection">Провести мини-исследование эмоций</button>
+        </div>
         <textarea id="diary-input" class="diary-compose__textarea"
-                  placeholder="Что сегодня было важным? Как вы себя чувствуете?"></textarea>
+                  placeholder="Хочу просто выговориться на тему сегодняшнего события..."></textarea>
         <div class="diary-compose__actions">
             <button class="btn-primary" id="btn-start-diary">Начать запись</button>
             <?php if (!$subscription): ?>
@@ -114,10 +124,12 @@ $memories      = $profileRepo->getTopMemories($currentUserId, 3);
 
 </main>
 
+</div><!-- /.phone -->
+
 <!-- Chat Roller -->
 <?php $chatRollerCloseMode = 'back'; require_once $root . '/features/chat-roller/chat-roller.php'; ?>
 
-<script src="/assets/js/main.js"></script>
-<script src="/pages/diary/diary.js"></script>
+<script src="<?= asset_url('/assets/js/main.js') ?>"></script>
+<script src="<?= asset_url('/pages/diary/diary.js') ?>"></script>
 </body>
 </html>

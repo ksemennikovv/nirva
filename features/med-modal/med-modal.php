@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/features/med-modal/med-modal.css">
+<link rel="stylesheet" href="<?= asset_url('/features/med-modal/med-modal.css') ?>">
 
 <div id="med-modal" class="med-modal" hidden aria-modal="true" role="dialog">
 
@@ -21,7 +21,13 @@
             <div class="med-modal__cover-desc" id="med-modal-desc"></div>
         </div>
 
-        <!-- Аудио-плеер -->
+        <!-- Большая кнопка Play для купленных медитаций -->
+        <button class="med-modal__play-full-btn" id="med-modal-play-full" hidden>
+            <svg width="18" height="20" viewBox="0 0 18 20" fill="currentColor"><path d="M0 0l18 10L0 20V0z"/></svg>
+            Слушать
+        </button>
+
+        <!-- Аудио-плеер (демо для не купленных) -->
         <div class="med-modal__player" id="med-modal-player">
             <button class="med-modal__play" id="med-modal-play">▶</button>
             <span class="med-modal__play-label">Демо</span>
@@ -34,8 +40,8 @@
             <audio id="med-modal-audio" preload="none"></audio>
         </div>
 
-        <!-- Прогресс-бар -->
-        <div class="med-modal__progress-wrap">
+        <!-- Прогресс-бар (только для демо) -->
+        <div class="med-modal__progress-wrap" id="med-modal-progress-wrap">
             <div class="med-modal__progress-track">
                 <div class="med-modal__progress-fill" id="med-modal-progress"></div>
             </div>
@@ -66,5 +72,5 @@
     </div>
 </div>
 
-<script>var MED_SET_DISCOUNT = <?php echo class_exists('BusinessConfig') ? BusinessConfig::MEDITATION_SET_DISCOUNT : 0.15; ?>;</script>
-<script src="/features/med-modal/med-modal.js"></script>
+<script>var MED_SET_DISCOUNT = <?php echo class_exists('BusinessConfig') ? BusinessConfig::meditationSetDiscount() : 0.15; ?>;</script>
+<script src="<?= asset_url('/features/med-modal/med-modal.js') ?>"></script>

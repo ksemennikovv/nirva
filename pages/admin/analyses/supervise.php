@@ -11,15 +11,15 @@ $db = Database::getConnection();
 
 // Все сессии с pending сообщениями (для списка)
 $sessionsStmt = $db->query("
-    SELECT a.id AS session_id, a.topic, a.user_id, a.status,
-           u.email,
+    SELECT a.id AS session_id, a.topic, a.user_id,
+           COALESCE(u.email, '—') AS email,
            COUNT(m.id) AS pending_count,
            MIN(m.created_at) AS oldest_pending
-    FROM analysis_sessions a
-    JOIN users u ON u.id = a.user_id
-    JOIN messages m ON m.analysis_session_id = a.id
+    FROM messages m
+    JOIN analysis_sessions a ON a.id = m.analysis_session_id
+    LEFT JOIN users u ON u.id = a.user_id
     WHERE m.role = 'assistant' AND m.review_status = 'pending_review'
-    GROUP BY a.id, a.topic, a.user_id, a.status, u.email
+    GROUP BY a.id
     ORDER BY oldest_pending ASC
 ");
 $sessions = $sessionsStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -27,19 +27,28 @@ $sessions = $sessionsStmt->fetchAll(PDO::FETCH_ASSOC);
 // Выбранная сессия для детального просмотра
 $focusSessionId = (int)($_GET['session_id'] ?? ($sessions[0]['session_id'] ?? 0));
 
-// Сообщения выбранной сессии
-$pending = [];
+// Сообщения выбранной сессии — только СТАРЕЙШЕЕ pending (одно за раз)
+$pending      = [];
+$pendingTotal = 0;
 if ($focusSessionId) {
+    $totalStmt = $db->prepare("
+        SELECT COUNT(*) FROM messages
+        WHERE analysis_session_id = ? AND role = 'assistant' AND review_status = 'pending_review'
+    ");
+    $totalStmt->execute([$focusSessionId]);
+    $pendingTotal = (int)$totalStmt->fetchColumn();
+
     $pendingStmt = $db->prepare("
         SELECT m.id AS msg_id, m.content, m.created_at AS msg_time,
                a.id AS session_id, a.topic, a.user_id,
                u.email
         FROM messages m
         JOIN analysis_sessions a ON a.id = m.analysis_session_id
-        JOIN users u ON u.id = a.user_id
+        LEFT JOIN users u ON u.id = a.user_id
         WHERE m.role = 'assistant' AND m.review_status = 'pending_review'
           AND a.id = ?
         ORDER BY m.created_at ASC
+        LIMIT 1
     ");
     $pendingStmt->execute([$focusSessionId]);
     $pending = $pendingStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -104,7 +113,7 @@ require dirname(__DIR__) . '/_layout.php';
 
 <?php foreach ($pending as $item):
     $ctxStmt = $db->prepare("
-        SELECT role, content FROM messages
+        SELECT role, COALESCE(reviewed_content, content) AS content FROM messages
         WHERE analysis_session_id = ?
           AND (role='user' OR review_status='approved' OR review_status IS NULL)
         ORDER BY id DESC LIMIT 6
@@ -125,6 +134,13 @@ require dirname(__DIR__) . '/_layout.php';
         </div>
     </div>
 
+    <!-- Индикатор очереди -->
+    <?php if ($pendingTotal > 1): ?>
+    <div style="padding:6px 20px;background:#fef3c7;border-bottom:1px solid #fcd34d;font-size:12px;color:#92400e;font-weight:600">
+        📋 Ответ 1 из <?php echo $pendingTotal; ?> — одобрите по очереди, следующий появится автоматически
+    </div>
+    <?php endif; ?>
+
     <!-- Контекст диалога -->
     <div style="padding:12px 20px;background:#fafbfc;border-bottom:1px solid var(--border)">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Контекст переписки</div>
@@ -132,7 +148,7 @@ require dirname(__DIR__) . '/_layout.php';
         <?php foreach ($context as $ctx): ?>
             <div style="display:flex;gap:10px;align-items:flex-start">
                 <span style="font-size:11px;color:var(--muted);width:80px;flex-shrink:0;padding-top:2px"><?php echo $ctx['role'] === 'user' ? '👤 Клиент' : '🤖 ИИ ✓'; ?></span>
-                <span style="font-size:13px;line-height:1.5;color:<?php echo $ctx['role'] === 'user' ? 'var(--text)' : '#15803d'; ?>"><?php echo nl2br(htmlspecialchars(mb_substr($ctx['content'], 0, 400))); ?><?php echo mb_strlen($ctx['content']) > 400 ? '...' : ''; ?></span>
+                <span style="font-size:13px;line-height:1.5;color:<?php echo $ctx['role'] === 'user' ? 'var(--text)' : '#15803d'; ?>"><?php $ctxText = (string)($ctx['content'] ?? ''); echo nl2br(htmlspecialchars(mb_substr($ctxText, 0, 400))); ?><?php echo mb_strlen($ctxText) > 400 ? '...' : ''; ?></span>
             </div>
         <?php endforeach; ?>
         </div>
@@ -145,7 +161,7 @@ require dirname(__DIR__) . '/_layout.php';
         <form method="post" action="/admin/analyses/api/approve-message.php">
             <input type="hidden" name="id" value="<?php echo $item['msg_id']; ?>">
             <input type="hidden" name="redirect" value="/admin/analyses/supervise.php?session_id=<?php echo $item['session_id']; ?>">
-            <textarea name="content" rows="5" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:6px;font-size:13px;line-height:1.6;resize:vertical;font-family:inherit"><?php echo htmlspecialchars($item['content']); ?></textarea>
+            <textarea name="content" rows="5" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:6px;font-size:13px;line-height:1.6;resize:vertical;font-family:inherit"><?php echo htmlspecialchars((string)($item['content'] ?? '')); ?></textarea>
             <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
                 <button type="submit" class="adm-btn adm-btn--primary">✓ Отправить пользователю</button>
                 <span style="font-size:12px;color:var(--muted)">можно отредактировать текст перед отправкой</span>

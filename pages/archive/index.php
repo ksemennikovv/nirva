@@ -3,6 +3,7 @@ session_start();
 $root = dirname(__DIR__, 2);
 require_once $root . '/config/app.php';
 require_once $root . '/config/database.php';
+require_once $root . '/assets/php/helpers.php';
 require_once $root . '/src/middleware/auth.php';
 require_once $root . '/src/services/Database/Database.php';
 require_once $root . '/src/repositories/AnalysisRepository.php';
@@ -40,17 +41,21 @@ $statusLabels = [
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <title>Архив разборов — Nirva</title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="stylesheet" href="/pages/archive/archive.css">
+    <link rel="stylesheet" href="<?= asset_url('/assets/css/main.css') ?>">
+    <link rel="stylesheet" href="<?= asset_url('/pages/archive/archive.css') ?>">
 </head>
 <body>
 
+<div class="phone phone--full">
+
 <header class="app-header">
-    <a href="/dashboard/" class="app-header__back">← Главная</a>
-    <span class="app-header__logo">Nirva</span>
-    <a href="/logout/" class="app-header__logout">Выйти</a>
+    <a href="/dashboard/" class="app-header__back">
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Назад
+    </a>
+    <a href="/dashboard/" class="app-header__logo-orb" style="width:36px;height:36px;font-size:14px">N</a>
 </header>
 
 <main class="archive-page">
@@ -92,6 +97,8 @@ $statusLabels = [
 
 </main>
 
-<script src="/assets/js/main.js"></script>
+</div><!-- /.phone -->
+
+<script src="<?= asset_url('/assets/js/main.js') ?>"></script>
 </body>
 </html>

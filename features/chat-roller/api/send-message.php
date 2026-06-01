@@ -44,10 +44,11 @@ try {
 
     // ─── Входящие данные ──────────────────────────────────────────────────────
 
-    $body     = json_decode(file_get_contents('php://input'), true);
-    $message  = trim($body['message']   ?? '');
-    $chatMode = $body['chat_mode']      ?? 'analysis_chat'; // analysis_chat | reflection_chat | diary_chat
-    $entityId = (int)($body['entity_id'] ?? 0); // analysis_session_id или diary_entry_id
+    $body      = json_decode(file_get_contents('php://input'), true);
+    $message   = trim($body['message']    ?? '');
+    $chatMode  = $body['chat_mode']       ?? 'analysis_chat'; // analysis_chat | reflection_chat | diary_chat
+    $entityId  = (int)($body['entity_id'] ?? 0); // analysis_session_id или diary_entry_id
+    $diaryMode = $body['diary_mode']      ?? null; // vent | reflection (только для diary_chat)
 
     if (!$message) {
         echo json_encode(['success' => false, 'data' => null, 'message' => 'Сообщение не может быть пустым', 'error' => 'empty_message']);
@@ -65,42 +66,7 @@ try {
         }
     }
 
-    // ─── Safety check ─────────────────────────────────────────────────────────
-
     $aiService = new AIService();
-    $safety    = $aiService->checkSafety($message);
-
-    if (!$safety['safe']) {
-        $severity = $safety['severity'] ?? 'high';
-
-        $safetyMessages = [
-            'critical' => 'Я вижу, что вам сейчас очень тяжело. Пожалуйста, немедленно обратитесь за помощью: позвоните на телефон доверия 8-800-2000-122 (бесплатно) или вызовите скорую помощь.',
-            'high'     => 'Я замечаю, что вы переживаете что-то очень серьёзное. Я не могу заменить профессиональную помощь. Пожалуйста, поговорите с психологом или позвоните на линию психологической помощи: 8-800-2000-122.',
-            'medium'   => 'Я слышу, что вам сейчас непросто. Если вы чувствуете, что ситуация становится опасной, пожалуйста, обратитесь к специалисту.',
-            'mild'     => 'Я слышу вас. Если в какой-то момент вам понадобится профессиональная поддержка, не стесняйтесь обратиться к специалисту.',
-        ];
-
-        $replyText = $safetyMessages[$severity] ?? $safetyMessages['medium'];
-
-        // Сохраняем только сообщение пользователя и safety-ответ (в режиме analysis_chat)
-        if ($chatMode === 'analysis_chat' && !empty($sessionId)) {
-            $messageRepo = new MessageRepository();
-            $messageRepo->saveMessage($sessionId, 'user', $message);
-            $messageRepo->saveMessage($sessionId, 'assistant', $replyText);
-        }
-
-        echo json_encode([
-            'success' => true,
-            'data'    => [
-                'message'  => ['role' => 'assistant', 'content' => $replyText],
-                'safety'   => true,
-                'severity' => $severity,
-            ],
-            'message' => '',
-            'error'   => null,
-        ]);
-        exit;
-    }
 
     // ─── Профиль пользователя для промпта ────────────────────────────────────
 
@@ -117,7 +83,7 @@ try {
     } elseif ($chatMode === 'reflection_chat') {
         sendReflectionMessage($message, $entityId, $userId, $aiService, $profileText, $root);
     } elseif ($chatMode === 'diary_chat') {
-        sendDiaryMessage($message, $entityId, $userId, $aiService, $profileText, $root);
+        sendDiaryMessage($message, $entityId, $userId, $aiService, $profileText, $root, $diaryMode);
     } else {
         echo json_encode(['success' => false, 'data' => null, 'message' => 'Неизвестный режим чата', 'error' => 'unknown_mode']);
     }
@@ -142,32 +108,30 @@ function sendAnalysisMessage(string $message, int $sessionId, int $userId, AISer
     $messageRepo = new MessageRepository();
     $messageRepo->saveMessage($sessionId, 'user', $message);
 
-    // Разбор начат — засчитываем в лимит подписки (только если не paywall-демо)
+    // Считаем подписку при первом сообщении
     if ($isFirstMsg && $userId && !$paywallActive && $subscription) {
         (new SubscriptionRepository())->incrementUsed((int)$subscription['id']);
     }
 
-    // В supervisor mode используем только одобренные сообщения как контекст
-    $history  = BusinessConfig::isSupervisorMode()
-        ? $messageRepo->getApprovedMessages($sessionId)
-        : $messageRepo->getMessages($sessionId);
-
-    $rawReply  = $profileText
-        ? $ai->sendWithPrompt($history, 'analysis-prompt.txt', $profileText)
-        : $ai->sendMessage($history);
-
-    // Парсим [TOPIC_UPDATE]
+    // ── Стартовый заголовок из первого сообщения ─────────────────────────────
     $topic = null;
-    if (preg_match('/\[TOPIC_UPDATE\](.*?)\[\/TOPIC_UPDATE\]/s', $rawReply, $m)) {
-        $parsed = json_decode(trim($m[1]), true);
-        if (!empty($parsed['topic'])) {
-            $topic = $parsed['topic'];
-            $_SESSION['analysis_topic'] = $topic;
-            (new AnalysisRepository())->updateTopic($sessionId, $topic);
-        }
+    if ($isFirstMsg) {
+        $topic = generateAnalysisTopic($message, $ai);
+        $analysisRepo->updateTopic($sessionId, $topic);
+        $_SESSION['analysis_topic'] = $topic;
     }
 
-    // Парсим [ANALYSIS_RESULT]
+    // ── Промпт + история ─────────────────────────────────────────────────────
+    $systemPrompt = file_get_contents($root . '/prompts/analysis-prompt.txt');
+    if ($profileText !== '') {
+        $systemPrompt .= "\n\n" . $profileText;
+    }
+
+    $history      = $messageRepo->getMessages($sessionId, 'analysis');
+    $conversation = $ai->buildConversation($systemPrompt, $history);
+    $rawReply     = $ai->getResponse($conversation);
+
+    // ── Парсим [ANALYSIS_RESULT] ──────────────────────────────────────────────
     $analysisCompleted = false;
     $selectedPractice  = null;
     $personalTask      = null;
@@ -180,46 +144,29 @@ function sendAnalysisMessage(string $message, int $sessionId, int $userId, AISer
             $selectedPractice  = $parsed['selected_practice']  ?? null;
             $personalTask      = $parsed['personal_task']      ?? null;
             $analysisSummary   = $parsed['analysis_summary']   ?? null;
+            // Финальная тема разбора — может отличаться от стартовой
+            if (!empty($parsed['topic'])) {
+                $topic = $parsed['topic'];
+                $analysisRepo->updateTopic($sessionId, $topic);
+                $_SESSION['analysis_topic'] = $topic;
+            }
         }
     }
 
-    // Очищаем ответ от скрытых блоков
-    $cleanReply = preg_replace('/\s*\[TOPIC_UPDATE\].*?\[\/TOPIC_UPDATE\]/s', '', $rawReply);
-    $cleanReply = trim(preg_replace('/\s*\[ANALYSIS_RESULT\].*?\[\/ANALYSIS_RESULT\]/s', '', $cleanReply));
+    // ── Очищаем ответ от тега ─────────────────────────────────────────────────
+    $cleanReply = trim(preg_replace('/\s*\[ANALYSIS_RESULT\].*?\[\/ANALYSIS_RESULT\]/s', '', $rawReply));
 
-    $assistantMsgId = $messageRepo->saveMessage($sessionId, 'assistant', $cleanReply);
-
-    // ── Supervisor Mode ────────────────────────────────────────────────────────
-    if (BusinessConfig::isSupervisorMode()) {
-        $messageRepo->markPendingReview($assistantMsgId);
-
-        // Сохранить метаданные в сессии — применятся после апрува
-        $db = \Database::getConnection();
-        $db->prepare('UPDATE analysis_sessions SET pending_metadata = ? WHERE id = ?')->execute([
-            json_encode([
-                'msg_id'            => $assistantMsgId,
-                'topic'             => $topic,
-                'analysis_completed'=> $analysisCompleted,
-                'selected_practice' => $selectedPractice,
-                'personal_task'     => $personalTask,
-                'analysis_summary'  => $analysisSummary,
-            ], JSON_UNESCAPED_UNICODE),
-            $sessionId,
-        ]);
-
-        echo json_encode([
-            'success' => true,
-            'data'    => ['waiting' => true, 'session_id' => $sessionId],
-            'message' => '',
-            'error'   => null,
-        ]);
-        return;
+    if ($cleanReply === '' && $analysisCompleted) {
+        $practiceLabel = is_array($selectedPractice) ? ($selectedPractice['title'] ?? '') : ($selectedPractice ?? '');
+        $cleanReply = $practiceLabel
+            ? "Ты большой молодец. Я подобрал для тебя практику «{$practiceLabel}» — она поможет проработать то, что мы обнаружили."
+            : 'Ты прошёл через это. Практика готова — она будет здесь для тебя.';
     }
-    // ──────────────────────────────────────────────────────────────────────────
+
+    $messageRepo->saveMessage($sessionId, 'assistant', $cleanReply);
 
     if ($analysisCompleted) {
         $practiceTitle = is_array($selectedPractice) ? ($selectedPractice['title'] ?? null) : $selectedPractice;
-        $analysisRepo  = new AnalysisRepository();
         $analysisRepo->completeSession($sessionId, $practiceTitle, $analysisSummary, $personalTask);
         $_SESSION['recommended_practice'] = $practiceTitle;
         $_SESSION['personal_task']        = $personalTask;
@@ -237,6 +184,25 @@ function sendAnalysisMessage(string $message, int $sessionId, int $userId, AISer
         'message' => '',
         'error'   => null,
     ]);
+}
+
+function generateAnalysisTopic(string $message, AIService $ai): string
+{
+    $conversation = [
+        ['role' => 'system', 'content' =>
+            'Дай заголовок для психологического разбора в 3-5 слов. ' .
+            'Только суть проблемы или темы — без вводных слов приветствия, без кавычек. ' .
+            'Примеры: "Страх потерять работу", "Конфликт с матерью", "Тревога перед переездом". ' .
+            'Отвечай только заголовком, ничего больше.'],
+        ['role' => 'user', 'content' => $message],
+    ];
+    try {
+        $title = $ai->getResponse($conversation);
+        return mb_substr(trim($title), 0, 80);
+    } catch (Throwable $e) {
+        error_log('generateAnalysisTopic error: ' . $e->getMessage());
+        return '';
+    }
 }
 
 function sendReflectionMessage(string $message, int $sessionId, int $userId, AIService $ai, string $profileText, string $root): void
@@ -305,7 +271,7 @@ function sendReflectionMessage(string $message, int $sessionId, int $userId, AIS
     ]);
 }
 
-function sendDiaryMessage(string $message, int $entryId, int $userId, AIService $ai, string $profileText, string $root): void
+function sendDiaryMessage(string $message, int $entryId, int $userId, AIService $ai, string $profileText, string $root, ?string $diaryMode = null): void
 {
     require_once $root . '/src/repositories/DiaryRepository.php';
     require_once $root . '/src/services/Profile/ProfileService.php';
@@ -313,8 +279,14 @@ function sendDiaryMessage(string $message, int $entryId, int $userId, AIService 
     $diaryRepo = new DiaryRepository();
     $diaryRepo->saveMessage($entryId, 'user', $message);
 
+    $promptFile = match($diaryMode) {
+        'vent'       => 'diary-prompt-vent.txt',
+        'reflection' => 'diary-prompt-reflection.txt',
+        default      => 'diary-prompt.txt',
+    };
+
     $history  = $diaryRepo->getMessages($entryId);
-    $rawReply = $ai->sendWithPrompt($history, 'diary-prompt.txt', $profileText);
+    $rawReply = $ai->sendWithPrompt($history, $promptFile, $profileText);
 
     // Парсим [DIARY_RESULT]
     $diaryCompleted  = false;

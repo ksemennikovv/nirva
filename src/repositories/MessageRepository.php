@@ -136,7 +136,9 @@ class MessageRepository
     {
         // review_status IS NULL — сообщения до миграции 006, считаем approved
         $stmt = $this->db->prepare(
-            'SELECT id, role, content, phase, created_at
+            'SELECT id, role,
+                    COALESCE(reviewed_content, content) AS content,
+                    phase, created_at
              FROM messages
              WHERE analysis_session_id = ?
                AND phase = ?

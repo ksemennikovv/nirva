@@ -41,10 +41,15 @@ $meds = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $statuses = ['pending','generating','ready','failed'];
 
+$flash = $_GET['deleted'] ?? '';
+
 $pageTitle = 'Медитации';
 $activeNav = 'meditations';
 require dirname(__DIR__) . '/_layout.php';
 ?>
+<?php if ($flash === '1'): ?>
+<div class="adm-alert adm-alert--success">🗑 Медитация удалена вместе с аудио, картинкой и историей.</div>
+<?php endif; ?>
 
 <div style="display:flex;gap:10px;margin-bottom:16px">
     <a href="/admin/meditations/general.php" class="adm-btn adm-btn--ghost adm-btn--sm">🎧 Общие медитации</a>

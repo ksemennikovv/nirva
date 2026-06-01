@@ -24,9 +24,9 @@ foreach ($plans as $p) {
     $data[$p]['analyses_per_month'] = (int)($settings->get("analyses_per_month_{$p}") ?? BusinessConfig::PLAN_ANALYSES[$p]);
 }
 
-$intervalDays     = (int)($settings->get('analysis_min_interval_days') ?? BusinessConfig::ANALYSIS_MIN_INTERVAL_DAYS);
-$burnPeriod       = (int)($settings->get('burn_period_days') ?? BusinessConfig::BURN_PERIOD_DAYS);
-$diaryFreeEntries = (int)($settings->get('diary_free_entries_limit') ?? BusinessConfig::DIARY_FREE_ENTRIES_LIMIT);
+$intervalDays     = BusinessConfig::analysisMinIntervalDays();
+$burnPeriod       = BusinessConfig::burnPeriodDays();
+$diaryFreeEntries = BusinessConfig::diaryFreeEntriesLimit();
 
 $pageTitle = 'Тарифы';
 $activeNav = 'tariffs';

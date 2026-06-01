@@ -1,209 +1,88 @@
 .billing-page {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 1.25rem 1rem 4rem;
+    padding: 20px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 40px;
 }
 
 .billing-page__title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    text-align: center;
-    margin: 0 0 1.25rem;
+    font-size: 22px; font-weight: 800; color: var(--t1);
+    letter-spacing: -.3px; margin: 0 0 4px;
 }
 
-/* ── Универсальная карточка-блок ──────────────────────────────────────── */
-
+/* ── Карточка-блок ────────────────────────────────────────────────────── */
 .billing-card {
-    background: #fff;
-    border: 1.5px solid #e8e8e8;
-    border-radius: 14px;
-    padding: 1.1rem 1.25rem;
-    margin-bottom: .85rem;
+    background: var(--card);
+    border: 1px solid var(--bd);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 12px rgba(15,27,45,.05);
+    padding: 18px 18px;
     position: relative;
 }
 
-.billing-card__label {
-    font-size: .8rem;
-    color: #888;
-    margin-bottom: .3rem;
-}
-
-.billing-card__plan {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #111;
-    margin-bottom: .2rem;
-}
-
-.billing-card__meta {
-    font-size: .9rem;
-    color: #555;
-    line-height: 1.5;
-}
+.billing-card__label { font-size: 11px; font-weight: 600; color: var(--t3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.billing-card__plan  { font-size: 24px; font-weight: 800; color: var(--t1); margin-bottom: 4px; }
+.billing-card__meta  { font-size: 13px; color: var(--t2); line-height: 1.5; }
 
 .billing-card__change {
-    position: absolute;
-    top: 1.1rem;
-    right: 1.25rem;
-    background: #f0f0f4;
-    border: none;
-    border-radius: 8px;
-    padding: .45rem .85rem;
-    font-size: .8rem;
-    color: #444;
-    cursor: pointer;
-    transition: background .15s;
+    position: absolute; top: 18px; right: 18px;
+    background: var(--gold-bg); border: 1.5px solid rgba(245,184,72,.35);
+    border-radius: 8px; padding: 6px 14px;
+    font-family: inherit; font-size: 12px; font-weight: 600; color: var(--gold3);
+    cursor: pointer; transition: background .15s;
 }
-
-.billing-card__change:hover {
-    background: #e4e4ec;
-}
+.billing-card__change:hover { background: rgba(245,184,72,.2); }
 
 /* ── Доступные разборы ────────────────────────────────────────────────── */
+.billing-card__count { font-size: 32px; font-weight: 800; color: var(--t1); margin: 4px 0 2px; }
+.billing-card__hint  { font-size: 12px; color: var(--t4); }
 
-.billing-card__count {
-    font-size: 1.9rem;
-    font-weight: 700;
-    color: #111;
-    margin: .2rem 0 .15rem;
-}
-
-.billing-card__hint {
-    font-size: .8rem;
-    color: #888;
-}
-
-/* ── Реферальный блок ────────────────────────────────────────────────── */
-
-.billing-referral__title {
-    font-weight: 600;
-    font-size: .95rem;
-    margin-bottom: .5rem;
-    text-align: center;
-}
-
-.billing-referral__desc {
-    font-size: .85rem;
-    color: #666;
-    text-align: center;
-    margin-bottom: .85rem;
-    line-height: 1.5;
-}
+/* ── Реферал ─────────────────────────────────────────────────────────── */
+.billing-referral__title { font-weight: 700; font-size: 14px; color: var(--t1); margin-bottom: 6px; text-align: center; }
+.billing-referral__desc  { font-size: 13px; color: var(--t3); text-align: center; margin-bottom: 12px; line-height: 1.5; }
 
 .billing-referral__link-row {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    background: #f6f6f9;
-    border-radius: 10px;
-    padding: .55rem .75rem;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg); border: 1px solid var(--bd);
+    border-radius: 10px; padding: 10px 12px;
 }
-
 .billing-referral__link {
-    flex: 1;
-    font-size: .8rem;
-    color: #555;
-    word-break: break-all;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    flex: 1; font-size: 12px; color: var(--t2);
+    word-break: break-all; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
 }
-
 .billing-referral__copy {
     flex-shrink: 0;
-    background: #fff;
-    border: 1.5px solid #ddd;
-    border-radius: 7px;
-    padding: .35rem .75rem;
-    font-size: .8rem;
-    cursor: pointer;
-    color: #444;
-    transition: border-color .15s;
+    background: var(--card); border: 1.5px solid var(--bd);
+    border-radius: 7px; padding: 6px 12px;
+    font-family: inherit; font-size: 12px; font-weight: 600; color: var(--t2);
+    cursor: pointer; transition: border-color .15s, color .15s;
 }
+.billing-referral__copy:hover { border-color: var(--gold2); color: var(--gold3); }
 
-.billing-referral__copy:hover {
-    border-color: var(--color-primary, #6c5ce7);
-    color: var(--color-primary, #6c5ce7);
-}
-
-/* ── История трансформации ───────────────────────────────────────────── */
-
+/* ── История ─────────────────────────────────────────────────────────── */
 .billing-history__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: .6rem;
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
 }
+.billing-history__all   { font-size: 13px; color: var(--gold3); text-decoration: none; font-weight: 600; }
+.billing-history__empty { font-size: 13px; color: var(--t4); }
 
-.billing-history__all {
-    font-size: .8rem;
-    color: var(--color-primary, #6c5ce7);
-    text-decoration: none;
-}
+.billing-history__list { display: flex; flex-direction: column; gap: 10px; }
+.billing-history__item { font-size: 13px; color: var(--t2); line-height: 1.5; }
+.billing-history__date  { color: var(--t1); font-weight: 700; }
+.billing-history__topic { color: var(--t2); font-weight: 500; }
 
-.billing-history__empty {
-    font-size: .9rem;
-    color: #aaa;
-}
-
-.billing-history__list {
-    display: flex;
-    flex-direction: column;
-    gap: .65rem;
-}
-
-.billing-history__item {
-    font-size: .88rem;
-    color: #555;
-    line-height: 1.5;
-}
-
-.billing-history__date {
-    color: #111;
-    font-weight: 600;
-}
-
-.billing-history__topic {
-    color: #333;
-    font-weight: 500;
-}
-
-/* ── CTA ────────────────────────────────────────────────────────────── */
-
+/* ── CTA ─────────────────────────────────────────────────────────────── */
 .billing-cta {
-    display: block;
-    width: 100%;
-    padding: 1rem;
-    background: var(--color-primary, #6c5ce7);
-    color: #fff;
-    text-align: center;
-    border-radius: 14px;
-    font-size: 1rem;
-    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--gold1), var(--gold2), var(--gold3));
+    color: #3B1F0A;
+    text-align: center; border-radius: var(--radius);
+    font-family: inherit; font-size: 15px; font-weight: 700;
     text-decoration: none;
-    margin-top: .5rem;
+    box-shadow: 0 4px 14px rgba(232,155,44,.28);
     transition: opacity .2s;
-    box-sizing: border-box;
 }
-
-.billing-cta:hover {
-    opacity: .88;
-}
-
-/* ── App header ─────────────────────────────────────────────────────── */
-
-.app-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: .75rem 1.5rem;
-    border-bottom: 1px solid #eee;
-    position: sticky;
-    top: 0;
-    background: #fff;
-    z-index: 100;
-}
-
-.app-header__back,
-.app-header__logout { color: #888; text-decoration: none; font-size: .9rem; }
-.app-header__logo   { font-weight: 700; color: var(--color-primary, #6c5ce7); }
+.billing-cta:hover { opacity: .9; }

@@ -71,6 +71,10 @@ class MeditationRepository
             $sets[] = 'demo_audio_url = ?';
             $params[] = $extra['demo_audio_url'];
         }
+        if (array_key_exists('image_url', $extra)) {
+            $sets[] = 'image_url = ?';
+            $params[] = $extra['image_url'];
+        }
         if (isset($extra['title'])) {
             $sets[] = 'title = ?';
             $params[] = $extra['title'];
@@ -251,5 +255,51 @@ class MeditationRepository
             $grouped[$slug]['meditations'][] = $row;
         }
         return array_values($grouped);
+    }
+
+    /** Записать сессию прослушивания. */
+    public function recordListen(int $userId, int $meditationId, int $durationSec, bool $completed): void
+    {
+        $stmt = $this->db->prepare(
+            'INSERT INTO meditation_listens (user_id, meditation_id, duration_sec, completed)
+             VALUES (?, ?, ?, ?)'
+        );
+        $stmt->execute([$userId, $meditationId, $durationSec, $completed ? 1 : 0]);
+    }
+
+    /** Статистика за последние 30 дней: total_minutes, sessions_count. */
+    /** Возвращает [ meditation_id => last_listened_at ] для всех прослушанных медитаций пользователя. */
+    public function getLastListenedPerMeditation(int $userId): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT meditation_id, MAX(listened_at) AS last_listened_at
+             FROM meditation_listens
+             WHERE user_id = ?
+             GROUP BY meditation_id'
+        );
+        $stmt->execute([$userId]);
+        $result = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $result[(int)$row['meditation_id']] = $row['last_listened_at'];
+        }
+        return $result;
+    }
+
+    public function getListeningStats(int $userId): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT
+                ROUND(SUM(duration_sec) / 60) AS total_minutes,
+                COUNT(*)                       AS sessions_count
+             FROM meditation_listens
+             WHERE user_id = ?
+               AND listened_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)'
+        );
+        $stmt->execute([$userId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return [
+            'total_minutes'  => (int)($row['total_minutes']  ?? 0),
+            'sessions_count' => (int)($row['sessions_count'] ?? 0),
+        ];
     }
 }

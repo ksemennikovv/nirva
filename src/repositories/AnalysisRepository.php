@@ -285,6 +285,38 @@ class AnalysisRepository
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
+    // ─── Dialogue State Machine ───────────────────────────────────────────────
+
+    public function updateDialogueStage(int $sessionId, string $stage, bool $resetCount = true): void
+    {
+        $sql = $resetCount
+            ? 'UPDATE analysis_sessions SET dialogue_stage = ?, stage_messages_count = 0 WHERE id = ?'
+            : 'UPDATE analysis_sessions SET dialogue_stage = ? WHERE id = ?';
+        $this->db->prepare($sql)->execute([$stage, $sessionId]);
+    }
+
+    public function incrementStageMsgCount(int $sessionId): void
+    {
+        $this->db->prepare(
+            'UPDATE analysis_sessions SET stage_messages_count = stage_messages_count + 1,
+             total_messages_count = total_messages_count + 1 WHERE id = ?'
+        )->execute([$sessionId]);
+    }
+
+    public function updateDialogueSummary(int $sessionId, string $summaryJson): void
+    {
+        $this->db->prepare(
+            'UPDATE analysis_sessions SET dialogue_summary = ? WHERE id = ?'
+        )->execute([$summaryJson, $sessionId]);
+    }
+
+    public function updateRiskLevel(int $sessionId, string $riskLevel): void
+    {
+        $this->db->prepare(
+            'UPDATE analysis_sessions SET risk_level = ? WHERE id = ?'
+        )->execute([$riskLevel, $sessionId]);
+    }
+
     /** Количество завершённых разборов пользователя (для онбординг-видео). */
     public function countCompleted(int $userId): int
     {

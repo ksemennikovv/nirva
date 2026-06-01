@@ -15,7 +15,7 @@
       #chat-roller-messages → bubbles добавляются через ChatRoller.appendMessage()
 -->
 
-<link rel="stylesheet" href="/features/chat-roller/chat-roller.css">
+<link rel="stylesheet" href="/features/chat-roller/chat-roller.css?v=<?php echo filemtime(__DIR__ . '/chat-roller.css'); ?>">
 
 <section id="chat-roller" data-close-mode="<?php echo htmlspecialchars($chatRollerCloseMode ?? 'stay'); ?>">
 
@@ -62,4 +62,4 @@
 
 </section>
 
-<script src="/features/chat-roller/chat-roller.js"></script>
+<script src="/features/chat-roller/chat-roller.js?v=<?php echo filemtime(__DIR__ . '/chat-roller.js'); ?>"></script>

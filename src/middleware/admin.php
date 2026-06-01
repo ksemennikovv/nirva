@@ -7,6 +7,10 @@
  * Устанавливает $adminUser.
  */
 
+if (!class_exists('Database')) {
+    require_once dirname(__DIR__, 2) . '/src/services/Database/Database.php';
+}
+
 $adminUserId = (int)($_SESSION['user_id'] ?? 0);
 
 if (!$adminUserId) {

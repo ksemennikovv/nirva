@@ -1,4 +1,12 @@
 Options -Indexes
+
+# CSS/JS: кэшировать 1 год (версия в ?v= обеспечивает обновление при бампе)
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
 RewriteEngine On
 
 # Статические файлы и существующие пути — не трогаем
@@ -15,6 +23,10 @@ RewriteRule ^archive/?$                /pages/archive/index.php        [L]
 RewriteRule ^meditations/?$            /pages/meditations/index.php    [L]
 RewriteRule ^login/?$                  /pages/login/index.php          [L]
 RewriteRule ^logout/?$                 /pages/login/api/logout.php     [L]
+
+# Meditations API
+RewriteRule ^meditations/api/record-listen\.php$  /pages/meditations/api/record-listen.php  [L]
+RewriteRule ^meditations/api/available\.php$      /pages/meditations/api/available.php       [L]
 
 # Admin panel
 RewriteRule ^admin/?$                              /pages/admin/index.php                        [L]
@@ -35,17 +47,28 @@ RewriteRule ^admin/subscriptions/api/update\.php$  /pages/admin/subscriptions/ap
 RewriteRule ^admin/tariffs/?$                      /pages/admin/tariffs/index.php                [L,QSA]
 RewriteRule ^admin/tariffs/api/save\.php$          /pages/admin/tariffs/api/save.php             [L]
 RewriteRule ^admin/meditations/?$                  /pages/admin/meditations/index.php            [L,QSA]
+RewriteRule ^admin/meditations/api/debug-imagen\.php$     /pages/admin/meditations/api/debug-imagen.php      [L,QSA]
+RewriteRule ^admin/meditations/api/test-image-gen\.php$  /pages/admin/meditations/api/test-image-gen.php   [L]
+RewriteRule ^admin/meditations/api/image-history\.php$   /pages/admin/meditations/api/image-history.php    [L]
+RewriteRule ^admin/meditations/api/upload-image\.php$    /pages/admin/meditations/api/upload-image.php     [L]
+RewriteRule ^admin/meditations/api/generate-image\.php$  /pages/admin/meditations/api/generate-image.php   [L]
 RewriteRule ^admin/meditations/api/regenerate\.php$     /pages/admin/meditations/api/regenerate.php      [L]
 RewriteRule ^admin/meditations/categories\.php$         /pages/admin/meditations/categories.php          [L,QSA]
 RewriteRule ^admin/meditations/general\.php$            /pages/admin/meditations/general.php             [L,QSA]
 RewriteRule ^admin/meditations/api/save-category\.php$  /pages/admin/meditations/api/save-category.php   [L]
 RewriteRule ^admin/meditations/api/delete-category\.php$ /pages/admin/meditations/api/delete-category.php [L]
 RewriteRule ^admin/meditations/api/save-general\.php$   /pages/admin/meditations/api/save-general.php    [L]
-RewriteRule ^admin/meditations/api/delete-general\.php$ /pages/admin/meditations/api/delete-general.php  [L]
+RewriteRule ^admin/meditations/api/delete-general\.php$  /pages/admin/meditations/api/delete-general.php   [L]
+RewriteRule ^admin/meditations/api/recategorize\.php$   /pages/admin/meditations/api/recategorize.php      [L]
 RewriteRule ^admin/meditations/edit\.php$               /pages/admin/meditations/edit.php                [L,QSA]
 RewriteRule ^admin/meditations/api/save-edit\.php$      /pages/admin/meditations/api/save-edit.php       [L]
 RewriteRule ^admin/meditations/api/delete-one\.php$     /pages/admin/meditations/api/delete-one.php      [L]
 RewriteRule ^admin/diary/?$                        /pages/admin/diary/index.php                  [L,QSA]
 RewriteRule ^admin/diary/view\.php$                /pages/admin/diary/view.php                   [L,QSA]
+RewriteRule ^admin/practices/?$                    /pages/admin/practices/index.php              [L,QSA]
+RewriteRule ^admin/practices/api/save\.php$        /pages/admin/practices/api/save.php           [L]
+RewriteRule ^admin/practices/api/delete\.php$      /pages/admin/practices/api/delete.php         [L]
 RewriteRule ^admin/portrait/view\.php$             /pages/admin/portrait/view.php                [L,QSA]
 RewriteRule ^admin/api/toggle-supervisor\.php$     /pages/admin/api/toggle-supervisor.php        [L]
+RewriteRule ^admin/settings/?$                     /pages/admin/settings/index.php               [L]
+RewriteRule ^admin/settings/api/save\.php$         /pages/admin/settings/api/save.php            [L]

@@ -3,6 +3,8 @@
 require_once __DIR__ . '/../../repositories/MeditationRepository.php';
 require_once __DIR__ . '/../../repositories/AppSettingsRepository.php';
 require_once __DIR__ . '/../../../config/business.php';
+require_once __DIR__ . '/../../../config/services.php';
+require_once __DIR__ . '/../ImageGeneration/ImageGenerationService.php';
 
 /**
  * Управление генерацией и жизненным циклом персональных медитаций.
@@ -28,11 +30,11 @@ class MeditationService
      */
     public function scheduleGeneration(int $userId, string $sourceType, int $sourceId): void
     {
-        if (BusinessConfig::MEDITATION_AUTO_GENERATE !== 'yes') {
+        if (!BusinessConfig::meditationAutoGenerate()) {
             return;
         }
 
-        $count = (int)BusinessConfig::MEDITATION_GENERATE_COUNT;
+        $count = BusinessConfig::meditationGenerateCount();
         $expiresAt = $this->computeExpiresAt();
 
         for ($i = 0; $i < $count; $i++) {
@@ -109,9 +111,32 @@ class MeditationService
             $result = $this->fetchAudioStatus($meditation['generation_job_id']);
 
             if ($result['status'] === 'done') {
+                // Генерация изображения после готовности аудио
+                $imageUrl = null;
+                try {
+                    $med      = $this->repo->getById($meditationId);
+                    $provider = ($med['type'] ?? 'personal') === 'personal'
+                        ? BusinessConfig::imageProviderPersonal()
+                        : BusinessConfig::imageProviderGeneral();
+
+                    if ($provider !== 'none' && $provider) {
+                        $category = '';
+                        if (!empty($med['category_id'])) {
+                            $db  = \Database::getConnection();
+                            $row = $db->prepare("SELECT name FROM meditation_categories WHERE id = ?")->execute([(int)$med['category_id']]);
+                            $cat = $db->query("SELECT name FROM meditation_categories WHERE id = " . (int)$med['category_id'])->fetch(\PDO::FETCH_ASSOC);
+                            $category = $cat['name'] ?? '';
+                        }
+                        $imageUrl = ImageGenerationService::generate($provider, $med, $category);
+                    }
+                } catch (\Throwable $imgErr) {
+                    error_log("MeditationService: image generation failed for #$meditationId: " . $imgErr->getMessage());
+                }
+
                 $this->repo->updateStatus($meditationId, 'ready', [
                     'full_audio_url' => $result['audio_url'],
                     'demo_audio_url' => $result['demo_url'] ?? null,
+                    'image_url'      => $imageUrl,
                 ]);
             } elseif ($result['status'] === 'failed') {
                 $this->repo->updateStatus($meditationId, 'failed');

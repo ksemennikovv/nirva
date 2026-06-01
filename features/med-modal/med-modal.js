@@ -28,7 +28,8 @@ const MedModal = {
         document.querySelector('.med-modal__overlay').addEventListener('click', () => MedModal.close());
         document.getElementById('med-modal-prev').addEventListener('click', () => MedModal._go(-1));
         document.getElementById('med-modal-next').addEventListener('click', () => MedModal._go(1));
-        document.getElementById('med-modal-play').addEventListener('click', () => MedModal._togglePlay());
+        document.getElementById('med-modal-play').addEventListener('click', () => MedModal._launchPlayer());
+        document.getElementById('med-modal-play-full').addEventListener('click', () => MedModal._launchPlayer());
         document.getElementById('med-modal-cart-btn').addEventListener('click', () => {
             const item   = MedModal._items[MedModal._index];
             const srcBtn = document.getElementById('med-modal-cart-btn');
@@ -60,7 +61,7 @@ const MedModal = {
             audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
         });
 
-        // Обновление прогресса
+        // Обновление прогресса (демо-превью в самом модале)
         this._audio.addEventListener('timeupdate', () => MedModal._onTimeUpdate());
         this._audio.addEventListener('ended', () => MedModal._onEnded());
     },
@@ -125,16 +126,13 @@ const MedModal = {
         document.getElementById('med-modal-progress').style.width = '0%';
         this._resetWaveform();
 
-        // Метка плеера: "Слушать" vs "Демо"
-        const playerLabel = document.querySelector('.med-modal__play-label');
-        if (playerLabel) {
-            playerLabel.textContent = isOwned ? 'Полная версия' : 'Демо';
-            playerLabel.classList.toggle('med-modal__play-label--full', isOwned);
-        }
-        const playerEl = document.getElementById('med-modal-player');
-        if (playerEl) playerEl.classList.toggle('med-modal__player--full', isOwned);
-        const progressFill = document.getElementById('med-modal-progress');
-        if (progressFill) progressFill.classList.toggle('med-modal__progress-fill--full', isOwned);
+        // Переключаем режим: для купленных — большая кнопка, для демо — встроенный плеер
+        const playFullBtn  = document.getElementById('med-modal-play-full');
+        const playerEl     = document.getElementById('med-modal-player');
+        const progressWrap = document.getElementById('med-modal-progress-wrap');
+        if (playFullBtn)  playFullBtn.hidden  = !isOwned;
+        if (playerEl)     playerEl.hidden     = isOwned;
+        if (progressWrap) progressWrap.hidden = isOwned;
 
         // Цена одной
         const priceEl = document.getElementById('med-modal-price');
@@ -164,7 +162,20 @@ const MedModal = {
         }
     },
 
-    // ── Плеер ─────────────────────────────────────────────────────────────────
+    // ── Запуск MedPlayer ──────────────────────────────────────────────────────
+
+    _launchPlayer() {
+        const item = MedModal._items[MedModal._index];
+        if (item && item.free && typeof MedPlayer !== 'undefined') {
+            MedModal.close();
+            // Запускаем конкретный трек; плеер сам загрузит полный список из API
+            MedPlayer.play([item], 0);
+            return;
+        }
+        MedModal._togglePlay();
+    },
+
+    // ── Встроенный плеер (демо-превью / фолбэк) ──────────────────────────────
 
     _togglePlay() {
         const audio = this._audio;

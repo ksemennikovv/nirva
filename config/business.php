@@ -116,31 +116,123 @@ final class BusinessConfig
 
     /**
      * Supervisor Mode: все ответы ИИ проходят ручную проверку администратором
-     * до отправки пользователю. Включить для тестирования алгоритма на реальных
-     * пользователях перед масштабированием.
-     * true — включён, false — автоматический режим (стандартная работа).
+     * до отправки пользователю.
      * Значение по умолчанию — переопределяется через app_settings (ключ supervisor_mode).
      */
     public const SUPERVISOR_MODE = true;
 
-    /**
-     * Динамическая проверка Supervisor Mode из app_settings.
-     * Приоритет: БД → константа-умолчание.
-     */
-    public static function isSupervisorMode(): bool
+    // ── Динамические настройки из app_settings ───────────────────────────────
+
+    /** Кэш всех настроек из app_settings (загружается одним запросом). */
+    private static ?array $settingsCache = null;
+
+    /** Загружает все настройки из БД в статический кэш. */
+    private static function loadSettings(): void
     {
-        static $cached = null;
-        if ($cached !== null) return $cached;
+        if (self::$settingsCache !== null) return;
         try {
             require_once __DIR__ . '/../src/services/Database/Database.php';
-            $stmt = Database::getConnection()->prepare('SELECT value FROM app_settings WHERE key_name = ?');
-            $stmt->execute(['supervisor_mode']);
-            $row = $stmt->fetchColumn();
-            $cached = ($row !== false) ? (bool)(int)$row : self::SUPERVISOR_MODE;
+            $rows = Database::getConnection()
+                ->query('SELECT key_name, value FROM app_settings')
+                ->fetchAll(PDO::FETCH_KEY_PAIR);
+            self::$settingsCache = $rows ?: [];
         } catch (\Throwable $e) {
-            $cached = self::SUPERVISOR_MODE;
+            self::$settingsCache = [];
         }
-        return $cached;
+    }
+
+    /**
+     * Возвращает значение настройки из БД, или $default если не задана.
+     * Все настройки загружаются одним запросом и кэшируются на время запроса.
+     */
+    public static function setting(string $key, $default = null): mixed
+    {
+        self::loadSettings();
+        return array_key_exists($key, self::$settingsCache)
+            ? self::$settingsCache[$key]
+            : $default;
+    }
+
+    // ── Типизированные аксессоры (DB override → константа-умолчание) ──────────
+
+    public static function isSupervisorMode(): bool
+    {
+        return (bool)(int)self::setting('supervisor_mode', self::SUPERVISOR_MODE ? '1' : '0');
+    }
+
+    public static function isSubscriptionRequired(): bool
+    {
+        return (bool)(int)self::setting('subscription_required', self::SUBSCRIPTION_REQUIRED ? '1' : '0');
+    }
+
+    public static function analysisMinIntervalDays(): int
+    {
+        return (int)self::setting('analysis_min_interval_days', self::ANALYSIS_MIN_INTERVAL_DAYS);
+    }
+
+    public static function burnPeriodDays(): int
+    {
+        return (int)self::setting('burn_period_days', self::BURN_PERIOD_DAYS);
+    }
+
+    public static function burnShowMinAnalyses(): int
+    {
+        return (int)self::setting('burn_show_min_analyses', self::BURN_SHOW_MIN_ANALYSES);
+    }
+
+    public static function dashboardDiaryDaysThreshold(): int
+    {
+        return (int)self::setting('dashboard_diary_days_threshold', self::DASHBOARD_DIARY_DAYS_THRESHOLD);
+    }
+
+    public static function dashboardDiaryDailyShowLimit(): int
+    {
+        return (int)self::setting('dashboard_diary_daily_show_limit', self::DASHBOARD_DIARY_DAILY_SHOW_LIMIT);
+    }
+
+    public static function diaryFreeEntriesLimit(): int
+    {
+        return (int)self::setting('diary_free_entries_limit', self::DIARY_FREE_ENTRIES_LIMIT);
+    }
+
+    public static function meditationAutoGenerate(): bool
+    {
+        return self::setting('meditation_auto_generate', self::MEDITATION_AUTO_GENERATE) === 'yes';
+    }
+
+    public static function meditationGenerateCount(): int
+    {
+        return (int)self::setting('meditation_generate_count', self::MEDITATION_GENERATE_COUNT);
+    }
+
+    /** Возвращает секунды. В БД хранятся дни (поле meditation_free_window_days). */
+    public static function meditationFreeWindowSeconds(): int
+    {
+        $days = (int)self::setting('meditation_free_window_days', 30);
+        return $days * 86400;
+    }
+
+    /** Возвращает долю 0–1. В БД хранится % (поле meditation_set_discount_pct). */
+    // ── Генерация изображений ─────────────────────────────────────────────────
+
+    public static function imageProviderPersonal(): string
+    {
+        return self::setting('image_provider_personal', 'none');
+    }
+
+    public static function imageProviderGeneral(): string
+    {
+        return self::setting('image_provider_general', 'none');
+    }
+
+    public static function meditationSetDiscount(): float
+    {
+        return (int)self::setting('meditation_set_discount_pct', (int)(self::MEDITATION_SET_DISCOUNT * 100)) / 100.0;
+    }
+
+    public static function referralBonusMonths(): int
+    {
+        return (int)self::setting('referral_bonus_months', self::REFERRAL_BONUS_MONTHS);
     }
 
     // ── Реферальная программа ────────────────────────────────────────────────
@@ -172,9 +264,9 @@ final class BusinessConfig
         $analysesPerMonth = (int)$subscription['analyses_per_month'];
         $remaining        = max(0, $analysesPerMonth - (int)$subscription['analyses_used']);
 
-        if ($analysesPerMonth <= self::BURN_SHOW_MIN_ANALYSES || $remaining <= 0) return null;
+        if ($analysesPerMonth <= self::burnShowMinAnalyses() || $remaining <= 0) return null;
 
-        $slotDays = self::BURN_PERIOD_DAYS / $analysesPerMonth;
+        $slotDays = self::burnPeriodDays() / $analysesPerMonth;
         $nextSlot = (int)$subscription['analyses_used'] + 1;
         $startsAt = strtotime($subscription['starts_at']);
         $burnTs   = $startsAt + (int)($nextSlot * $slotDays * 86400);

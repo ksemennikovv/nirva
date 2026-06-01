@@ -30,16 +30,27 @@ if (!$session || ($userId && (int)$session['user_id'] !== $userId)) {
     exit;
 }
 
+$db      = Database::getConnection();
 $msgRepo = new MessageRepository();
-$lastMsg = $msgRepo->getLastAssistantMessage($sessionId);
 
-if (!$lastMsg || $lastMsg['review_status'] === 'pending_review') {
+// Если есть хоть одно pending — ждём, пока все не будут обработаны
+$pendingCount = $db->prepare(
+    'SELECT COUNT(*) FROM messages WHERE analysis_session_id=? AND role="assistant" AND review_status="pending_review"'
+);
+$pendingCount->execute([$sessionId]);
+if ((int)$pendingCount->fetchColumn() > 0) {
     echo json_encode(['success' => true, 'data' => ['waiting' => true]]);
     exit;
 }
 
-if ($lastMsg['review_status'] === 'rejected') {
-    // Отклонено — ждём регенерации (следующее pending сообщение)
+$lastMsg = $msgRepo->getLastAssistantMessage($sessionId);
+
+if (!$lastMsg || $lastMsg['review_status'] === 'rejected' || $lastMsg['review_status'] === null) {
+    echo json_encode(['success' => true, 'data' => ['waiting' => true]]);
+    exit;
+}
+
+if ($lastMsg['review_status'] !== 'approved') {
     echo json_encode(['success' => true, 'data' => ['waiting' => true]]);
     exit;
 }
@@ -48,7 +59,6 @@ if ($lastMsg['review_status'] === 'rejected') {
 $content = $lastMsg['reviewed_content'] ?? $lastMsg['content'];
 
 // Получить и применить pending_metadata
-$db = Database::getConnection();
 $row = $db->prepare('SELECT pending_metadata FROM analysis_sessions WHERE id = ?');
 $row->execute([$sessionId]);
 $meta = json_decode($row->fetchColumn() ?? '{}', true) ?? [];

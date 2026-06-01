@@ -1,177 +1,110 @@
 .analysis-page {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 4rem;
-}
-
-.app-header {
+    padding: 16px 20px 40px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: .75rem 1.5rem;
-    border-bottom: 1px solid #eee;
-    position: sticky;
-    top: 0;
-    background: #fff;
-    z-index: 100;
+    flex-direction: column;
+    gap: 14px;
+    padding-bottom: 40px;
 }
-.app-header__back,
-.app-header__logout { color: #888; text-decoration: none; font-size: .9rem; }
-.app-header__logo   { font-weight: 700; color: var(--color-primary, #6c5ce7); }
 
 .analysis-meta {
-    display: flex;
-    align-items: baseline;
-    gap: .75rem;
-    margin-bottom: 1.25rem;
-    padding: 0 .25rem;
+    display: flex; align-items: baseline; gap: 12px; padding: 0 2px;
 }
 .analysis-meta__topic {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #1a1a2e;
-    flex: 1;
+    font-size: 16px; font-weight: 700; color: var(--t1); flex: 1; line-height: 1.3;
 }
-.analysis-meta__topic em {
-    font-style: normal;
-    color: #aaa;
-    font-weight: 400;
-}
-.analysis-meta__date {
-    font-size: .82rem;
-    color: #aaa;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
+.analysis-meta__topic em { font-style: normal; color: var(--t4); font-weight: 400; }
+.analysis-meta__date { font-size: 12px; color: var(--t4); white-space: nowrap; flex-shrink: 0; }
 
 .analysis-block {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,.06);
-    margin-bottom: 1.25rem;
+    background: var(--card);
+    border: 1px solid var(--bd);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 12px rgba(15,27,45,.05);
     overflow: hidden;
+    flex-shrink: 0;
     transition: opacity .3s;
 }
 .analysis-block--highlight {
-    background: linear-gradient(135deg, #f0edff, #e8f4fd);
-    border: 1.5px solid var(--color-primary, #6c5ce7);
-    padding: 1.5rem;
-    text-align: center;
+    background: linear-gradient(135deg, var(--gold-bg2), rgba(232,155,44,.05));
+    border-color: rgba(245,184,72,.4);
+    padding: 20px; text-align: center;
 }
-.analysis-block--highlight p {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    line-height: 1.6;
-}
+.analysis-block--highlight p { margin-bottom: 14px; font-size: 14px; line-height: 1.65; color: var(--t2); }
 
 .analysis-block__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.1rem 1.5rem;
-    cursor: pointer;
-    background: #fafafa;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 18px; cursor: pointer;
+    background: rgba(15,27,45,.02);
 }
-.analysis-block__header h2 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0;
-}
+.analysis-block__header h2 { font-size: 14px; font-weight: 700; color: var(--t1); margin: 0; }
 .analysis-block__toggle {
-    background: none;
-    border: none;
-    color: #aaa;
-    font-size: .85rem;
-    cursor: pointer;
+    background: none; border: none;
+    font-size: 12px; font-weight: 600; color: var(--gold3);
+    cursor: pointer; padding: 0; white-space: nowrap;
+    flex-shrink: 0;
 }
+.analysis-block[data-collapsed="true"] .analysis-block__body { display: none; }
 
 .analysis-block__body {
-    padding: 1.25rem 1.5rem;
+    padding: 16px 18px 20px;
+    border-top: 1px solid var(--bd);
 }
-.analysis-block[data-collapsed="true"] .analysis-block__body {
-    display: none;
-}
-.analysis-block[data-collapsed="true"] .analysis-block__toggle::before {
-    content: 'Развернуть';
-}
-.analysis-block[data-collapsed="false"] .analysis-block__toggle::before {
-    content: 'Свернуть';
-}
-/* Скрываем исходный текст кнопки при использовании ::before */
-.analysis-block__toggle { font-size: 0; }
-.analysis-block__toggle::before { font-size: .85rem; }
-
-.analysis-summary__text {
-    line-height: 1.7;
-    color: #444;
-}
+.analysis-summary__text { line-height: 1.7; color: var(--t2); font-size: 14px; margin-bottom: 10px; }
 
 .practice-video video {
-    width: 100%;
-    border-radius: 12px;
-    margin-bottom: 1rem;
-    background: #000;
+    width: 100%; border-radius: 12px; margin-bottom: 14px; background: #000;
 }
 
-.btn-primary {
-    display: inline-block;
-    padding: .85rem 2rem;
-    background: var(--color-primary, #6c5ce7);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity .2s;
-    width: 100%;
-    text-align: center;
-}
-.btn-primary:disabled { opacity: .6; cursor: not-allowed; }
-
-.btn-secondary {
-    display: inline-block;
-    padding: .65rem 1.25rem;
-    background: transparent;
-    color: var(--color-primary, #6c5ce7);
-    border: 1.5px solid var(--color-primary, #6c5ce7);
-    border-radius: 8px;
-    font-size: .9rem;
-    cursor: pointer;
-    margin-top: .75rem;
-    transition: background .2s, color .2s;
-}
-.btn-secondary:hover {
-    background: var(--color-primary, #6c5ce7);
-    color: #fff;
-}
-
-.meditations-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-}
+.meditations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
 .meditation-card {
-    background: #f8f7ff;
-    border-radius: 12px;
-    padding: 1rem;
+    background: var(--gold-bg2); border: 1px solid rgba(245,184,72,.2);
+    border-radius: 12px; padding: 14px;
 }
-.meditation-card__title {
+.meditation-card__title { font-weight: 700; font-size: 13px; color: var(--t1); margin-bottom: 4px; }
+.meditation-card__topic { font-size: 12px; color: var(--t3); margin-bottom: 10px; }
+.meditation-card audio { width: 100%; }
+
+/* Контент внутри блоков */
+.analysis-block__body h3 {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--t4);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin: 18px 0 8px;
+}
+.analysis-block__body h3:first-child { margin-top: 0; }
+.analysis-block__body p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--t2);
+    margin-bottom: 12px;
+}
+.analysis-block__body p:last-child { margin-bottom: 0; }
+
+/* Кнопка внутри блока */
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 18px;
+    margin-top: 12px;
+    background: rgba(15,27,45,.04);
+    border: 1.5px solid var(--bd);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: .25rem;
+    color: var(--t1);
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    text-decoration: none;
 }
-.meditation-card__topic {
-    font-size: .85rem;
-    color: #888;
-    margin-bottom: .75rem;
-}
-.meditation-card audio {
-    width: 100%;
-}
+.btn-secondary:hover { border-color: var(--gold2); background: var(--gold-bg2); }
 
-.muted { color: #aaa; font-size: .95rem; }
+/* Медитации внутри analysis-block не должны иметь лишний padding */
+.analysis-block__body .med-row-block { margin: -4px 0 0; }
 
-.analysis-onboarding-video video {
-    width: 100%;
-    border-radius: 12px;
-}
+.muted { color: var(--t4); font-size: 13px; }
+
+.analysis-onboarding-video video { width: 100%; border-radius: 12px; }

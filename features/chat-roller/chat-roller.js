@@ -21,6 +21,8 @@ const ChatRoller = {
     _entityId:             null,
     _paywallMode:          false,
     _paywallTriggered:     false,
+    _diaryMode:            null,
+    _diaryModeSelected:    false,
 
     init() {
         const sendBtn = document.getElementById('send-chat-roller-message');
@@ -76,9 +78,11 @@ const ChatRoller = {
 
     // ── Открытие в режиме дневника ────────────────────────────────────────
 
-    openDiary(entryId, initialText, readonly = false) {
-        ChatRoller._chatMode = 'diary_chat';
-        ChatRoller._entityId = entryId;
+    openDiary(entryId, initialText, readonly = false, diaryMode = null) {
+        ChatRoller._chatMode          = 'diary_chat';
+        ChatRoller._entityId          = entryId;
+        ChatRoller._diaryMode         = diaryMode;
+        ChatRoller._diaryModeSelected = !!diaryMode;
         ChatRoller._setTitle('Дневник');
         ChatRoller._activate();
 
@@ -89,31 +93,25 @@ const ChatRoller = {
             const btn   = document.getElementById('send-chat-roller-message');
             if (input) input.style.display = 'none';
             if (btn)   btn.style.display   = 'none';
+
+            fetch('/features/chat-roller/api/load-messages.php', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ mode: 'diary', entity_id: entryId }),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.data.messages.length > 0) {
+                        data.data.messages.forEach(msg => ChatRoller.appendMessage(msg));
+                        ChatRoller.scrollToBottom();
+                    }
+                })
+                .catch(() => {});
         } else {
             ChatRoller._showInput();
+            const firstMsg = (initialText && initialText.trim()) || 'Хочу записать в дневник';
+            ChatRoller.sendMessage(firstMsg);
         }
-
-        fetch('/features/chat-roller/api/load-messages.php', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ mode: 'diary', entity_id: entryId }),
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success && data.data.messages.length > 0) {
-                    data.data.messages.forEach(msg => ChatRoller.appendMessage(msg));
-                    ChatRoller.scrollToBottom();
-                } else if (!readonly) {
-                    const firstMsg = (initialText && initialText.trim()) || 'Хочу записать в дневник';
-                    ChatRoller.sendMessage(firstMsg);
-                }
-            })
-            .catch(() => {
-                if (!readonly) {
-                    const firstMsg = (initialText && initialText.trim()) || 'Хочу записать в дневник';
-                    ChatRoller.sendMessage(firstMsg);
-                }
-            });
     },
 
     // ── Открытие в режиме readonly (просмотр истории) ────────────────────
@@ -140,6 +138,10 @@ const ChatRoller = {
     close() {
         const el = document.getElementById('chat-roller');
         el.classList.remove('active', 'chat-roller--readonly');
+        // Обновляем hero-state на лендинге: сессия уже активна → покажет unfinished-analysis
+        if (typeof HeroStatesManager !== 'undefined') {
+            HeroStatesManager.init();
+        }
     },
 
     // ── Отправка сообщения ────────────────────────────────────────────────
@@ -162,6 +164,9 @@ const ChatRoller = {
             chat_mode: ChatRoller._chatMode,
         };
         if (ChatRoller._entityId) body.entity_id = ChatRoller._entityId;
+        if (ChatRoller._chatMode === 'diary_chat' && ChatRoller._diaryMode) {
+            body.diary_mode = ChatRoller._diaryMode;
+        }
 
         fetch('/features/chat-roller/api/send-message.php', {
             method:  'POST',
@@ -238,6 +243,36 @@ const ChatRoller = {
         if (data.diary_completed)     ChatRoller._onDiaryCompleted();
 
         ChatRoller.setInputLocked(false);
+    },
+
+    _showDiaryModeChips(initialText) {
+        const messages = document.getElementById('chat-roller-messages');
+        const chips = document.createElement('div');
+        chips.id = 'diary-mode-chips';
+        chips.className = 'diary-mode-chips';
+        chips.innerHTML = `
+            <p class="diary-mode-chips__label">Что сегодня было важным для Вас? Опиши событие, мысль, эмоцию или телесное ощущение.</p>
+            <p class="diary-mode-chips__sublabel">Как хотите провести эту запись?</p>
+            <button class="diary-chip" data-mode="vent">Просто выговориться</button>
+            <button class="diary-chip" data-mode="reflection">Провести мини-исследование эмоций</button>
+        `;
+        messages.appendChild(chips);
+        ChatRoller.scrollToBottom();
+
+        chips.querySelectorAll('.diary-chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+                ChatRoller._diaryMode = btn.dataset.mode;
+                ChatRoller._diaryModeSelected = true;
+                chips.remove();
+                // Если пользователь уже ввёл текст на странице — подставляем в textarea
+                const input = document.getElementById('chat-roller-input');
+                if (input && initialText && initialText.trim()) {
+                    input.value = initialText.trim();
+                }
+                ChatRoller.setInputLocked(false);
+                if (input) input.focus();
+            });
+        });
     },
 
     // ── Обработчики завершения по режиму ──────────────────────────────────
@@ -445,6 +480,13 @@ const ChatRoller = {
                             ChatRoller._triggerPaywall();
                         }
                     }
+                }
+
+                // Если есть pending-сообщения (supervisor mode) — восстанавливаем polling
+                if (data.success && data.data.waiting && data.data.session_id) {
+                    ChatRoller.setInputLocked(true);
+                    ChatRoller.showTyping();
+                    ChatRoller._startReviewPolling(data.data.session_id);
                 }
             })
             .catch(() => {});
