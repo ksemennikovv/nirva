@@ -165,6 +165,41 @@ require dirname(__DIR__) . '/_layout.php';
 </div>
 <?php endif; ?>
 
+<!-- ── Удалить запись ─────────────────────────────────────────────────────── -->
+<div style="margin-top:24px;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+        <div style="font-weight:600;font-size:14px">Удалить запись дневника</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Удалит запись и все сообщения диалога.</div>
+    </div>
+    <div style="padding:12px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+
+        <form method="post" action="/admin/diary/api/delete.php"
+              onsubmit="return confirm('Удалить запись дневника #<?php echo $id; ?>?\n\nПортрет пользователя останется без изменений.')">
+            <input type="hidden" name="id" value="<?php echo $id; ?>">
+            <input type="hidden" name="redirect" value="/admin/diary/">
+            <input type="hidden" name="rollback_profile" value="0">
+            <button type="submit" class="adm-btn adm-btn--ghost" style="border-color:#fca5a5;color:var(--danger)">
+                Удалить запись
+            </button>
+        </form>
+        <div style="font-size:12px;color:var(--muted)">Только запись и диалог.<br>Портрет не изменяется.</div>
+
+        <div style="width:1px;height:40px;background:var(--border);flex-shrink:0"></div>
+
+        <form method="post" action="/admin/diary/api/delete.php"
+              onsubmit="return confirm('Удалить запись дневника #<?php echo $id; ?> и откатить портрет?\n\nИз психоэмоционального портрета будут удалены параметры и воспоминания из этой записи.')">
+            <input type="hidden" name="id" value="<?php echo $id; ?>">
+            <input type="hidden" name="redirect" value="/admin/diary/">
+            <input type="hidden" name="rollback_profile" value="1">
+            <button type="submit" class="adm-btn adm-btn--danger">
+                Удалить + откатить портрет
+            </button>
+        </form>
+        <div style="font-size:12px;color:var(--muted)">То же, плюс удалит параметры<br>и воспоминания из этой записи.</div>
+
+    </div>
+</div>
+
 <style>
 .adm-chat-log { display:flex; flex-direction:column; gap:8px; padding:16px; background:var(--bg); }
 </style>

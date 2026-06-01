@@ -65,6 +65,7 @@ RewriteRule ^admin/meditations/api/save-edit\.php$      /pages/admin/meditations
 RewriteRule ^admin/meditations/api/delete-one\.php$     /pages/admin/meditations/api/delete-one.php      [L]
 RewriteRule ^admin/diary/?$                        /pages/admin/diary/index.php                  [L,QSA]
 RewriteRule ^admin/diary/view\.php$                /pages/admin/diary/view.php                   [L,QSA]
+RewriteRule ^admin/diary/api/delete\.php$          /pages/admin/diary/api/delete.php              [L]
 RewriteRule ^admin/practices/?$                    /pages/admin/practices/index.php              [L,QSA]
 RewriteRule ^admin/practices/api/save\.php$        /pages/admin/practices/api/save.php           [L]
 RewriteRule ^admin/practices/api/delete\.php$      /pages/admin/practices/api/delete.php         [L]
