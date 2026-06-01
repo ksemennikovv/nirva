@@ -21,7 +21,14 @@ $summary = if ($dirs) { $dirs -join ', ' } else { 'misc' }
 $count = $allFiles.Count
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$msg = "[auto] Update $summary ($count files) - $timestamp"
+# Use Claude-written message if available, else auto-generate
+$tmpMsg = ".claude\COMMIT_MSG.tmp"
+if (Test-Path $tmpMsg) {
+    $msg = (Get-Content $tmpMsg -Raw -Encoding UTF8).Trim()
+    Remove-Item $tmpMsg -Force
+} else {
+    $msg = "[auto] Update $summary ($count files) - $timestamp"
+}
 
 & git add -A
 & git commit -m $msg
