@@ -42,6 +42,9 @@ $schema = [
     'image_style_imagen'               => 'string',
     'image_prompt_personal'            => 'string',
     'image_prompt_general'             => 'string',
+    // ИИ-ассистент
+    'ai_provider'                      => 'string',
+    'ai_model'                         => 'string',
 ];
 
 $db   = Database::getConnection();

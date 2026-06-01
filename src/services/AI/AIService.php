@@ -135,26 +135,56 @@ class AIService
 
     /**
      * getResponse() — диспетчер: отправляет conversation в нужный провайдер.
-     * Провайдер задаётся константой AI_PROVIDER в config/ai.php.
+     * Провайдер и модель читаются из app_settings (DB), fallback — константы config/ai.php.
      */
     public function getResponse(array $conversation): string
     {
-        $provider = defined('AI_PROVIDER') ? AI_PROVIDER : 'openai';
+        $provider = $this->resolveProvider();
+        $model    = $this->resolveModel($provider);
 
         return match ($provider) {
-            'claude'   => $this->getResponseClaude($conversation),
-            'deepseek' => $this->getResponseDeepSeek($conversation),
-            default    => $this->getResponseOpenAI($conversation),
+            'claude'   => $this->getResponseClaude($conversation, $model),
+            'deepseek' => $this->getResponseDeepSeek($conversation, $model),
+            default    => $this->getResponseOpenAI($conversation, $model),
         };
     }
 
-    private function getResponseOpenAI(array $conversation): string
+    private function resolveProvider(): string
     {
+        if (class_exists('BusinessConfig')) {
+            $val = BusinessConfig::setting('ai_provider');
+            if ($val !== null && $val !== '') {
+                return $val;
+            }
+        }
+        return defined('AI_PROVIDER') ? AI_PROVIDER : 'openai';
+    }
+
+    private function resolveModel(string $provider): string
+    {
+        if (class_exists('BusinessConfig')) {
+            $val = BusinessConfig::setting('ai_model');
+            if ($val !== null && $val !== '') {
+                return $val;
+            }
+        }
+        return match ($provider) {
+            'claude'   => defined('CLAUDE_MODEL')   ? CLAUDE_MODEL   : 'claude-sonnet-4-6',
+            'deepseek' => defined('DEEPSEEK_MODEL')  ? DEEPSEEK_MODEL  : 'deepseek-chat',
+            default    => defined('OPENAI_MODEL')    ? OPENAI_MODEL    : 'gpt-4o',
+        };
+    }
+
+    private function getResponseOpenAI(array $conversation, string $model = ''): string
+    {
+        if ($model === '') {
+            $model = defined('OPENAI_MODEL') ? OPENAI_MODEL : 'gpt-4o';
+        }
         $payload = json_encode([
-            'model'       => OPENAI_MODEL,
+            'model'       => $model,
             'messages'    => $conversation,
-            'temperature' => OPENAI_TEMPERATURE,
-            'max_tokens'  => OPENAI_MAX_TOKENS,
+            'temperature' => defined('OPENAI_TEMPERATURE') ? OPENAI_TEMPERATURE : 0.70,
+            'max_tokens'  => defined('OPENAI_MAX_TOKENS')  ? OPENAI_MAX_TOKENS  : 350,
         ]);
 
         $raw = $this->curlPost(
@@ -178,8 +208,11 @@ class AIService
      * Claude API имеет другую структуру: system передаётся отдельным полем,
      * а не как первый элемент messages с role=system.
      */
-    private function getResponseClaude(array $conversation): string
+    private function getResponseClaude(array $conversation, string $model = ''): string
     {
+        if ($model === '') {
+            $model = defined('CLAUDE_MODEL') ? CLAUDE_MODEL : 'claude-sonnet-4-6';
+        }
         $systemPrompt = '';
         $messages     = [];
 
@@ -191,12 +224,12 @@ class AIService
             }
         }
 
-        $body = ['model' => CLAUDE_MODEL, 'max_tokens' => CLAUDE_MAX_TOKENS, 'messages' => $messages];
+        $body = ['model' => $model, 'max_tokens' => defined('CLAUDE_MAX_TOKENS') ? CLAUDE_MAX_TOKENS : 350, 'messages' => $messages];
         if ($systemPrompt !== '') {
             $body['system'] = $systemPrompt;
         }
         // Claude не принимает temperature ниже 0 или выше 1 — передаём как есть
-        $body['temperature'] = CLAUDE_TEMPERATURE;
+        $body['temperature'] = defined('CLAUDE_TEMPERATURE') ? CLAUDE_TEMPERATURE : 0.70;
 
         $raw = $this->curlPost(
             'https://api.anthropic.com/v1/messages',
@@ -222,13 +255,16 @@ class AIService
     /**
      * DeepSeek совместим с OpenAI API-форматом — меняем только base URL и ключ.
      */
-    private function getResponseDeepSeek(array $conversation): string
+    private function getResponseDeepSeek(array $conversation, string $model = ''): string
     {
+        if ($model === '') {
+            $model = defined('DEEPSEEK_MODEL') ? DEEPSEEK_MODEL : 'deepseek-chat';
+        }
         $payload = json_encode([
-            'model'       => DEEPSEEK_MODEL,
+            'model'       => $model,
             'messages'    => $conversation,
-            'temperature' => DEEPSEEK_TEMPERATURE,
-            'max_tokens'  => DEEPSEEK_MAX_TOKENS,
+            'temperature' => defined('DEEPSEEK_TEMPERATURE') ? DEEPSEEK_TEMPERATURE : 0.70,
+            'max_tokens'  => defined('DEEPSEEK_MAX_TOKENS')  ? DEEPSEEK_MAX_TOKENS  : 350,
         ]);
 
         $raw = $this->curlPost(

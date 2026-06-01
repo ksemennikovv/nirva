@@ -359,6 +359,50 @@ $curResolution   = $all['imagen_resolution']       ?? '1K';
     </div>
 </div>
 
+<?php
+// Текущие значения настроек ИИ-ассистента
+$curAiProvider = $all['ai_provider'] ?? 'openai';
+$curAiModel    = $all['ai_model']    ?? 'gpt-4o';
+?>
+
+<!-- ═══ ИИ-АССИСТЕНТ ════════════════════════════════════════════════════ -->
+<div class="adm-card" style="margin-bottom:20px">
+    <div class="adm-card__head"><div class="adm-card__title">🤖 ИИ-ассистент</div></div>
+    <div style="padding:0">
+
+    <div style="padding:14px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">
+            Провайдер и модель, используемые для всех AI-промтов: разборы, самоисследования, дневник, тексты персональных медитаций.
+        </div>
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:start">
+
+            <!-- Провайдер -->
+            <div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Провайдер</div>
+                <select name="ai_provider" id="ai-provider"
+                        onchange="updateAiModels()"
+                        style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
+                    <option value="openai"   <?php echo $curAiProvider === 'openai'   ? 'selected' : ''; ?>>💬 ChatGPT (OpenAI)</option>
+                    <option value="claude"   <?php echo $curAiProvider === 'claude'   ? 'selected' : ''; ?>>🧠 Claude (Anthropic)</option>
+                    <option value="deepseek" <?php echo $curAiProvider === 'deepseek' ? 'selected' : ''; ?>>🔍 DeepSeek</option>
+                </select>
+            </div>
+
+            <!-- Модель -->
+            <div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Модель</div>
+                <select name="ai_model" id="ai-model"
+                        style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px">
+                    <!-- заполняется JS -->
+                </select>
+            </div>
+
+        </div>
+    </div>
+
+    </div>
+</div>
+
 <div style="display:flex;gap:12px;align-items:center;padding:4px 0">
     <button type="submit" class="adm-btn adm-btn--primary">Сохранить настройки</button>
     <span style="font-size:12px;color:var(--muted)">Изменения вступают в силу немедленно, без перезапуска</span>
@@ -380,6 +424,44 @@ function updateModels(type) {
     document.getElementById('imagen-models-'+ type).style.display = prov === 'imagen' ? 'block' : 'none';
     document.getElementById('none-models-'  + type).style.display = prov === 'none'   ? 'flex'  : 'none';
 }
+
+// ИИ-ассистент — модели по провайдерам
+const AI_MODELS = {
+    openai: [
+        { value: 'gpt-4o',       label: 'GPT-4o — основная ⭐⭐⭐⭐⭐' },
+        { value: 'gpt-4o-mini',  label: 'GPT-4o mini — быстрая и дешёвая ⭐⭐⭐' },
+        { value: 'gpt-4-turbo',  label: 'GPT-4 Turbo ⭐⭐⭐⭐' },
+        { value: 'o3-mini',      label: 'o3-mini — с рассуждениями ⭐⭐⭐⭐' },
+    ],
+    claude: [
+        { value: 'claude-opus-4-7',   label: 'Claude Opus 4.7 — топ ⭐⭐⭐⭐⭐' },
+        { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6 ⭐⭐⭐⭐' },
+        { value: 'claude-haiku-4-5',  label: 'Claude Haiku 4.5 — быстрая ⭐⭐⭐' },
+    ],
+    deepseek: [
+        { value: 'deepseek-chat',     label: 'DeepSeek Chat ⭐⭐⭐⭐' },
+        { value: 'deepseek-reasoner', label: 'DeepSeek Reasoner — с рассуждениями ⭐⭐⭐⭐' },
+    ],
+};
+
+const currentAiModel = <?php echo json_encode($curAiModel); ?>;
+
+function updateAiModels() {
+    const prov   = document.getElementById('ai-provider').value;
+    const select = document.getElementById('ai-model');
+    const models = AI_MODELS[prov] || [];
+    select.innerHTML = '';
+    models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.value;
+        opt.textContent = m.label;
+        if (m.value === currentAiModel) opt.selected = true;
+        select.appendChild(opt);
+    });
+}
+
+// Инициализация при загрузке страницы
+updateAiModels();
 </script>
 
 <?php require dirname(__DIR__) . '/_layout_end.php'; ?>
